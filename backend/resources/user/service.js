@@ -1,6 +1,6 @@
-import pool from "../db.js";
+import pool from "../../db.js";
 import bcrypt from "bcryptjs";
-import token from "../utils/token.js";
+import token from "../../utils/token.js";
 
 class UserService {
     getUsers = async () => {

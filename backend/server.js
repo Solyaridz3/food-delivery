@@ -1,14 +1,16 @@
 import express from "express";
+import { errorMiddleware as ErrorHandler } from "./middleware/index.js";
 
 class App {
     constructor(controllers, port) {
         this.express = express();
-        
         this.port = port;
+
         this.#initializeMiddleware();
         this.#initializeControllers(controllers);
+        this.#initializeErrorHandling();
     }
-    #initializeMiddleware(){
+    #initializeMiddleware() {
         this.express.use(express.json());
     }
 
@@ -16,6 +18,10 @@ class App {
         controllers.forEach((controller) => {
             this.express.use("/api/v2", controller.router);
         });
+    }
+
+    #initializeErrorHandling() {
+        this.express.use(ErrorHandler);
     }
 
     listen() {
