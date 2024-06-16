@@ -7,10 +7,8 @@ import Footer from "./components/Footer/Footer";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import { useState } from "react";
 
-
 const App = () => {
     const [showLogin, setShowLogin] = useState(false);
-
     return (
         <>
             {showLogin ? <LoginPopup setShowLogin={setShowLogin} /> : <></>}

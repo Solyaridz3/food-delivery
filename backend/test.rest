@@ -1,11 +1,15 @@
 ###
-GET http://localhost:3000
+GET http://localhost:13000/api/v2/users/setup
 
 ###
-POST http://localhost:3000
+GET http://localhost:13000/api/v2/users
+
+###
+POST http://localhost:13000/api/v2/users/register
 Content-Type: application/json
 
 {
     "name": "John",
-    "location": "Kyiv"
+    "email": "bebra",
+    "password": "traher"
 }
