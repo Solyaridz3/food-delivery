@@ -15,8 +15,6 @@ class UserService {
 
     register = async (name, email, password, userRole) => {
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log(hashedPassword);
-        console.log(hashedPassword.length);
         await pool.query(queries.register, [
             name,
             email,
