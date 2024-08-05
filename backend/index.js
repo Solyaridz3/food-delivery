@@ -1,5 +1,5 @@
-import App from "./server.js";
-import UserController from "./user/controller.js";
+import App from "./app.js";
+import UserController from "./resources/user/controller.js";
 
 const PORT = 3000;
 

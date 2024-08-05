@@ -1,5 +1,6 @@
 import { Router } from "express";
 import UserService from "./service.js";
+import HttpException from "../../utils/exceptions/HttpException.js";
 
 class UserController {
     path = "/users";
@@ -39,18 +40,17 @@ class UserController {
             return res.status(201).json({ token });
         } catch (err) {
             console.log(err);
-            next(new HttpException(400, error.message));
+            next(new HttpException(400, err.message));
         }
     };
 
     login = async (req, res, next) => {
         try {
-            const { name, email } = req.body;
-            const user = await this.#userService.login(name, email);
+            const { email, password } = req.body;
+            const user = await this.#userService.login(email, password);
             return res.status(200).json({ user });
         } catch (err) {
-            console.log(err);
-            return res.sendStatus(500);
+            next(new HttpException(401, err.message));
         }
     };
 
@@ -59,8 +59,7 @@ class UserController {
             const data = await this.#userService.getUsers();
             return res.status(200).json(data.rows);
         } catch (err) {
-            console.log(err);
-            return res.sendStatus(500);
+            next(new HttpException(400, err.message));
         }
     };
 }
