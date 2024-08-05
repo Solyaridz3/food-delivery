@@ -13,6 +13,14 @@ class UserService {
         await pool.query(queries.setup);
     };
 
+    findUser = async (id) => {
+        const user = await pool.query(queries.getById, [id]);
+        if (result.rows.length === 0) {
+            throw new Error("User not found");
+        }
+        return result.rows[0];
+    };
+
     register = async (name, email, password, userRole) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         await pool.query(queries.register, [

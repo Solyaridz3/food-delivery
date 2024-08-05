@@ -12,7 +12,7 @@ function base64UrlEncode(str) {
 
 function createToken(user) {
     const header = { alg: "HS256", typ: "JWT" };
-    const payload = { id: user.id };
+    const payload = { id: user.id, role: user.userRole };
     const encodedHeader = base64UrlEncode(JSON.stringify(header));
     const encodedPayload = base64UrlEncode(JSON.stringify(payload));
 

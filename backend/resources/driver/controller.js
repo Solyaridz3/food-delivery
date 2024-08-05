@@ -1,10 +1,7 @@
-import { Router } from "express";
-import OrderService from "./service.js";
-
-class OrderController {
-    path = "/order";
+class DriverController {
+    path = "/driver";
     router = new Router();
-    #orderService = new OrderService();
+    #driverService = new DriverService();
 
     constructor() {
         this.initializeRoutes();
@@ -16,7 +13,7 @@ class OrderController {
 
     setup = async (req, res, next) => {
         try {
-            await this.#orderService.setup();
+            await this.#driverService.setup();
             res.sendStatus(200);
         } catch (err) {
             console.log(err);
@@ -26,6 +23,3 @@ class OrderController {
 
     createOrder(items) {}
 }
-
-
-export default OrderController;

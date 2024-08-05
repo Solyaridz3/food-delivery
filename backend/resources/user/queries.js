@@ -6,6 +6,8 @@ const register =
 
 const getByEmail = "SELECT * FROM users WHERE email = $1";
 
+const getById = "SELECT * FROM users WHERE id = $1";
+
 const getAll = "SELECT * FROM users";
 
-export default { setup, register, getByEmail, getAll };
+export default { setup, register, getByEmail, getAll, getById };
