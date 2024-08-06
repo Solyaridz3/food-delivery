@@ -38,8 +38,6 @@ class OrderController {
             throw new HttpException(400, err.message);
         }
     };
-
-    createOrder(items) {}
 }
 
 export default OrderController;
