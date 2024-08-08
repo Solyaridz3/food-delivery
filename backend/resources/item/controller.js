@@ -1,6 +1,10 @@
 import { Router } from "express";
 import HttpException from "../../utils/exceptions/HttpException.js";
 import ItemService from "./service.js";
+import multer from "multer";
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 class ItemController {
     path = "/items";
@@ -9,10 +13,25 @@ class ItemController {
     constructor() {
         this.initializeRoutes();
     }
+    
+    setup = async (req, res, next) => {
+        try {
+            await this.#itemService.setup();
+            res.sendStatus(200);
+        } catch (err) {
+            console.log(err);
+            res.sendStatus(500);
+        }
+    };
 
     initializeRoutes() {
-        this.router.get("/", this.getAll);
-        this.router.post("/", this.createItem);
+        this.router.get(`${this.path}/setup`, this.setup);
+        this.router.get(`${this.path}/`, this.getAll);
+        this.router.post(
+            `${this.path}/`,
+            upload.single("image"),
+            this.createItem
+        );
     }
 
     getAll = async (req, res, next) => {
@@ -26,14 +45,13 @@ class ItemController {
 
     createItem = async (req, res, next) => {
         try {
-            const { name, price, description, ingredients, image, preparation_time } = req.body;
+            const image = req.file;
+            const { name, price, preparation_time } = req.body;
             const item = await this.#itemService.create(
                 name,
                 price,
-                description,
-                ingredients,
-                image,
-                preparation_time
+                preparation_time,
+                image
             );
             return res.status(201).json({ item });
         } catch (err) {
