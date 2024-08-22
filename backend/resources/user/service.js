@@ -64,6 +64,7 @@ class UserService {
             throw new Error("Unable to delete user or user does not exist");
         }
     };
+
     update = async (data) => {
         try {
             const queryResult = await pool.query(queries.getById, [data.id]);
@@ -75,15 +76,15 @@ class UserService {
             const user = queryResult.rows[0];
 
             const isPasswordValid = await bcrypt.compare(
-                data.old_password,
+                data.password,
                 user.password
             );
 
             if (!isPasswordValid) {
-                throw new Error("You entered invalid old password");
+                throw new Error("You entered invalid password");
             }
-
-            if (data.password) {
+            
+            if (data.new_password) {
                 const hash = await bcrypt.hash(data.password, 10);
                 user.password = hash;
             }
@@ -95,12 +96,13 @@ class UserService {
             if (data.name) {
                 user.name = data.name;
             }
-
             delete user.userrole;
 
             await pool.query(queries.updateUser, Object.values(user));
 
-            return { status: "success" };
+            const { password, ...newUserData } = user; // in order to omit password
+
+            return newUserData;
         } catch (error) {
             throw new Error(
                 error.message ||

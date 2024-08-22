@@ -95,18 +95,18 @@ class UserController {
     updateUser = async (req, res, next) => {
         try {
             const id = req.user;
-            const { old_password, name, email, password } = req.body;
+            const { password, name, email, new_password } = req.body;
 
-            if (!old_password)
+            if (!password)
                 return next(
-                    new HttpException(400, "You have to enter old password")
+                    new HttpException(400, "You have to enter current password")
                 );
 
-            const data = { id, old_password, name, email, password };
+            const data = { id, password, name, email, new_password };
 
             const updatedUser = await this.#userService.update(data);
 
-            return res.status(200).json({ updatedUser });
+            return res.status(200).json({ user: updatedUser });
         } catch (error) {
             next(new HttpException(400, error.message));
         }

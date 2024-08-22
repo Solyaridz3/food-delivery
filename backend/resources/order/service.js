@@ -7,35 +7,51 @@ class OrderService {
         await pool.query(queries.setup);
     };
 
+    calculateDeliveryTime = async (address, preparationTime) => {
+        const distanceInfo = await getDistance(address);
+
+        const timeToDrive = distanceInfo.duration.text;
+
+        const totalTime = preparationTime + parseInt(timeToDrive);
+
+        const date = new Date();
+        date.setMinutes(date.getMinutes() + totalTime);
+        let options = {
+            timeZone: "Europe/Kyiv",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        };
+
+        const deliveryTime = date.toLocaleString([], options);
+        return deliveryTime;
+    };
+
     create = async (
         userId,
         totalPrice,
         deliveryStatus,
-        totalPreparationTime,
+        preparationTime,
         address
     ) => {
-        const distanceInfo = await getDistance(address);
-        const timeToDrive = distanceInfo.duration.text;
+        const deliveryTime = await this.calculateDeliveryTime(
+            address,
+            preparationTime
+        );
+        console.log(deliveryTime);
 
-        const totalTime = totalPreparationTime + parseInt(timeToDrive);
-        console.log(totalTime);
-        const date = new Date();
-        date.setMinutes(date.getMinutes() + totalTime);
-        let options = { timeZone: "Europe/Kyiv" };
-        let deliveryTime = date.toLocaleString("en-US", options).split(", ")[1];
-
-        // const orderId = await pool.query(queries.create, [
-        //     userId,
-        //     totalPrice,
-        //     deliveryAddress,
-        //     deliveryStatus,
-        // ]);
-        return deliveryTime;
+        const orderId = await pool.query(queries.create, [
+            userId,
+            totalPrice,
+            deliveryStatus,
+            deliveryTime,
+        ]);
+        return orderId.rows[0];
     };
 
     getOrder = async (orderId) => {
         const order = await pool.query(queries.getOne, [orderId]);
-        return order;
+        return order.rows[0];
     };
 }
 
