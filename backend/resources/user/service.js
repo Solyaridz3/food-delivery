@@ -57,6 +57,57 @@ class UserService {
 
         return accessToken;
     };
+
+    delete = async (id) => {
+        try {
+        } catch {
+            throw new Error("Unable to delete user or user does not exist");
+        }
+    };
+    update = async (data) => {
+        try {
+            const queryResult = await pool.query(queries.getById, [data.id]);
+
+            if (queryResult.rows.length === 0) {
+                throw new Error("Error occurred: Unable to find your profile");
+            }
+
+            const user = queryResult.rows[0];
+
+            const isPasswordValid = await bcrypt.compare(
+                data.old_password,
+                user.password
+            );
+
+            if (!isPasswordValid) {
+                throw new Error("You entered invalid old password");
+            }
+
+            if (data.password) {
+                const hash = await bcrypt.hash(data.password, 10);
+                user.password = hash;
+            }
+
+            if (data.email) {
+                user.email = data.email;
+            }
+
+            if (data.name) {
+                user.name = data.name;
+            }
+
+            delete user.userrole;
+
+            await pool.query(queries.updateUser, Object.values(user));
+
+            return { status: "success" };
+        } catch (error) {
+            throw new Error(
+                error.message ||
+                    "Unable to update user, please check again given information."
+            );
+        }
+    };
 }
 
 export default UserService;

@@ -1,6 +1,9 @@
 import { Router } from "express";
 import UserService from "./service.js";
 import HttpException from "../../utils/exceptions/HttpException.js";
+import validate from "./validation.js";
+import { validationMiddleware } from "../../middleware/validation.middleware.js";
+import { authMiddleware } from "../../middleware/auth.middleware.js";
 
 class UserController {
     path = "/users";
@@ -13,9 +16,22 @@ class UserController {
 
     initializeRoutes() {
         this.router.get(`${this.path}/setup`, this.setup);
-        this.router.post(`${this.path}/register`, this.register);
-        this.router.post(`${this.path}/login`, this.login);
         this.router.get(`${this.path}/`, this.getUsers);
+        this.router.post(
+            `${this.path}/register`,
+            validationMiddleware(validate.register),
+            this.register
+        );
+        this.router.post(
+            `${this.path}/login`,
+            validationMiddleware(validate.login),
+            this.login
+        );
+        this.router.patch(
+            `${this.path}/`,
+            authMiddleware,
+            this.updateUser
+        )
     }
     setup = async (req, res, next) => {
         try {
@@ -24,6 +40,15 @@ class UserController {
         } catch (err) {
             console.log(err);
             res.sendStatus(500);
+        }
+    };
+
+    getUsers = async (req, res, next) => {
+        try {
+            const data = await this.#userService.getUsers();
+            return res.status(200).json(data.rows);
+        } catch (err) {
+            next(new HttpException(400, err.message));
         }
     };
 
@@ -54,12 +79,36 @@ class UserController {
         }
     };
 
-    getUsers = async (req, res, next) => {
+    deleteUser = async (req, res, next) => {
         try {
-            const data = await this.#userService.getUsers();
-            return res.status(200).json(data.rows);
-        } catch (err) {
-            next(new HttpException(400, err.message));
+            if (!req.user || req.user.role !== "admin") {
+                return next(new HttpException(405, "Not allowed"));
+            }
+            const id = req.params.id;
+            const deletedUser = await this.UserService.delete(id);
+            return res.status(200).json({ deletedUser });
+        } catch (error) {
+            next(new HttpException(400, error.message));
+        }
+    };
+
+    updateUser = async (req, res, next) => {
+        try {
+            const id = req.user;
+            const { old_password, name, email, password } = req.body;
+
+            if (!old_password)
+                return next(
+                    new HttpException(400, "You have to enter old password")
+                );
+
+            const data = { id, old_password, name, email, password };
+
+            const updatedUser = await this.#userService.update(data);
+
+            return res.status(200).json({ updatedUser });
+        } catch (error) {
+            next(new HttpException(400, error.message));
         }
     };
 }

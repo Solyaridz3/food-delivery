@@ -10,4 +10,10 @@ const getById = "SELECT * FROM users WHERE id = $1";
 
 const getAll = "SELECT * FROM users";
 
-export default { setup, register, getByEmail, getAll, getById };
+const updateUser = "UPDATE users SET name = $2, email = $3, password = $4 WHERE id = $1";
+
+const updateName = "SET name = $1 WHERE id = $2";
+
+const updatePassword = "SET password = $1 WHERE id = $2";
+
+export default { setup, register, getByEmail, getAll, getById, updateUser };
