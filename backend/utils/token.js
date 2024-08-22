@@ -27,7 +27,7 @@ function createToken(user) {
     return `${encodedHeader}.${encodedPayload}.${signature}`;
 }
 
-function verifyToken(token, secret) {
+function verifyToken(token) {
     const [encodedHeader, encodedPayload, signature] = token.split(".");
 
     const expectedSignature = crypto

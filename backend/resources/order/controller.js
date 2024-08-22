@@ -3,7 +3,7 @@ import OrderService from "./service.js";
 import HttpException from "../../utils/exceptions/HttpException.js";
 
 class OrderController {
-    path = "/order";
+    path = "/orders";
     router = new Router();
     #orderService = new OrderService();
 
@@ -13,6 +13,7 @@ class OrderController {
 
     initializeRoutes() {
         this.router.get(`${this.path}/setup`, this.setup);
+        this.router.post(`${this.path}/`, this.makeOrder);
     }
 
     setup = async (req, res, next) => {
@@ -27,11 +28,14 @@ class OrderController {
 
     makeOrder = async (req, res, next) => {
         try {
-            const total = req.body.total;
+            const userId = "123";
+            const { total, total_preparation_time, address } = req.body;
             const orderId = await this.#orderService.create(
-                req.userId,
+                userId,
                 total,
-                "preparing"
+                "preparing",
+                total_preparation_time,
+                address
             );
             res.send(201, { order_id: orderId });
         } catch (err) {

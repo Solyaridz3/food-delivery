@@ -2,6 +2,7 @@ import { Router } from "express";
 import HttpException from "../../utils/exceptions/HttpException.js";
 import ItemService from "./service.js";
 import multer from "multer";
+import { authMiddleware } from "../../middleware/auth.middleware.js";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -13,7 +14,7 @@ class ItemController {
     constructor() {
         this.initializeRoutes();
     }
-    
+
     setup = async (req, res, next) => {
         try {
             await this.#itemService.setup();
@@ -29,7 +30,7 @@ class ItemController {
         this.router.get(`${this.path}/`, this.getAll);
         this.router.post(
             `${this.path}/`,
-            upload.single("image"),
+            [authMiddleware, upload.single("image")],
             this.createItem
         );
     }
@@ -45,6 +46,7 @@ class ItemController {
 
     createItem = async (req, res, next) => {
         try {
+            console.log(req.user);
             const image = req.file;
             const { name, price, preparation_time } = req.body;
             const item = await this.#itemService.create(
