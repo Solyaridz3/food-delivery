@@ -20,6 +20,5 @@ class DriverController {
             res.sendStatus(500);
         }
     };
-
-    createOrder(items) {}
+    
 }

@@ -31,7 +31,6 @@ class OrderController {
     getOrder = async (req, res, next) => {
         try {
             const orderId = req.query.order_id;
-            console.log(orderId);
             const order = await this.#orderService.getOrder(orderId);
             res.status(200).json(order);
         } catch (err) {
@@ -50,6 +49,7 @@ class OrderController {
                 preparation_time,
                 address
             );
+
             res.status(201).json({ order_id: orderId });
         } catch (err) {
             throw new HttpException(400, err.message);

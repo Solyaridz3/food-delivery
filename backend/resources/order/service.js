@@ -1,19 +1,14 @@
 import pool from "../../db.js";
 import queries from "./queries.js";
 import getDistance from "../../utils/location.js";
+import asyncTimeout from "../../utils/asyncTImeout.js";
 
 class OrderService {
     setup = async () => {
         await pool.query(queries.setup);
     };
 
-    calculateDeliveryTime = async (address, preparationTime) => {
-        const distanceInfo = await getDistance(address);
-
-        const timeToDrive = distanceInfo.duration.text;
-
-        const totalTime = preparationTime + parseInt(timeToDrive);
-
+    calculateDeliveryTime = async (totalTime) => {
         const date = new Date();
         date.setMinutes(date.getMinutes() + totalTime);
         let options = {
@@ -27,6 +22,12 @@ class OrderService {
         return deliveryTime;
     };
 
+    setDelivered = async (orderId, minutes) => {
+        const ms = minutes * 60 * 1000;
+        await asyncTimeout(ms);
+        await pool.query(queries.setDelivered, ["delivered", orderId]);
+    };
+
     create = async (
         userId,
         totalPrice,
@@ -34,19 +35,22 @@ class OrderService {
         preparationTime,
         address
     ) => {
-        const deliveryTime = await this.calculateDeliveryTime(
-            address,
-            preparationTime
-        );
-        console.log(deliveryTime);
-
-        const orderId = await pool.query(queries.create, [
+        const distanceInfo = await getDistance(address);
+        const timeToDrive = distanceInfo.duration.text;
+        const totalTime = preparationTime + parseInt(timeToDrive);
+        const deliveryTime = await this.calculateDeliveryTime(totalTime);
+        const deliveryCost = timeToDrive * 0.5;
+        totalPrice += deliveryCost;
+        const queryResult = await pool.query(queries.create, [
             userId,
             totalPrice,
             deliveryStatus,
             deliveryTime,
         ]);
-        return orderId.rows[0];
+        const orderId = queryResult.rows[0].order_id;
+        this.setDelivered(orderId, totalTime);
+
+        return orderId;
     };
 
     getOrder = async (orderId) => {
