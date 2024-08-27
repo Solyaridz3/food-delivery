@@ -22,10 +22,13 @@ class ItemService {
     };
 
     getOne = async (id) => {
-        const data = await pool.query("SELECT * FROM items WHERE id = $1", [
-            id,
-        ]);
+        const data = await pool.query(queries.getById, [id]);
         return data;
+    };
+
+    getList = async (itemsIds) => {
+        const queryResult = await pool.query(queries.getList, [itemsIds]);
+        return queryResult.rows;
     };
 
     create = async (name, price, preparation_time, image) => {

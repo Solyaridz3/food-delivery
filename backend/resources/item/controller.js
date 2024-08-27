@@ -33,6 +33,7 @@ class ItemController {
             [authMiddleware, upload.single("image")],
             this.createItem
         );
+        this.router.get(`${this.path}/selection`, this.getList);
     }
 
     getAll = async (req, res, next) => {
@@ -43,6 +44,16 @@ class ItemController {
             next(new HttpException(400, err.message));
         }
     };
+    
+    getList = async(req, res, next) =>{
+        try {
+            const itemsIds = req.body.items_ids;
+            const items = await this.#itemService.getList(itemsIds);
+            res.status(200).json(items);
+        } catch (err) {
+            next(new HttpException(400, err.message));
+        }
+    }
 
     createItem = async (req, res, next) => {
         try {
