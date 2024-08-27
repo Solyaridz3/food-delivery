@@ -6,6 +6,7 @@ import asyncTimeout from "../../utils/asyncTImeout.js";
 class OrderService {
     setup = async () => {
         await pool.query(queries.setup);
+        await pool.query(queries.setupOrderItems);
     };
 
     calculateDeliveryTime = async (totalTime) => {
@@ -28,26 +29,54 @@ class OrderService {
         await pool.query(queries.setDelivered, ["delivered", orderId]);
     };
 
-    create = async (
-        userId,
-        totalPrice,
-        deliveryStatus,
-        preparationTime,
-        address
-    ) => {
+    create = async (userId, items, address) => {
+        let itemIds = items.map((item) => item.item_id);
+
+        const itemsData = await pool.query(
+            `SELECT item_id, price, preparation_time FROM items WHERE item_id = ANY($1::int[])`,
+            [itemIds]
+        );
+        let totalPreparationTime = 0;
+
+        items.forEach((item) => {
+            const itemData = itemsData.rows.find(
+                (row) => row.item_id === item.itemId
+            );
+            const itemTotalPrice = itemData.price * item.quantity;
+            totalPrice += itemTotalPrice;
+            totalPreparationTime += itemData.preparation_time;
+        });
+
         const distanceInfo = await getDistance(address);
         const timeToDrive = distanceInfo.duration.text;
-        const totalTime = preparationTime + parseInt(timeToDrive);
+        const totalTime = totalPreparationTime + parseInt(timeToDrive);
         const deliveryTime = await this.calculateDeliveryTime(totalTime);
         const deliveryCost = timeToDrive * 0.5;
         totalPrice += deliveryCost;
+
         const queryResult = await pool.query(queries.create, [
             userId,
             totalPrice,
-            deliveryStatus,
+            "pending",
             deliveryTime,
         ]);
+
         const orderId = queryResult.rows[0].order_id;
+
+        const orderItemsPromises = items.map((item) =>
+            pool.query(
+                "INSERT INTO order_items (order_id, item_id, quantity, item_price) VALUES ($1, $2, $3, $4)",
+                [
+                    orderId,
+                    item.itemId,
+                    item.quantity,
+                    itemsData.rows.find((row) => row.item_id === item.itemId)
+                        .price,
+                ]
+            )
+        );
+        await Promise.all(orderItemsPromises);
+
         this.setDelivered(orderId, totalTime);
 
         return orderId;
