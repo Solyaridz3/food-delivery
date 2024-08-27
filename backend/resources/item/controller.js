@@ -38,7 +38,7 @@ class ItemController {
     getAll = async (req, res, next) => {
         try {
             const data = await this.#itemService.getAll();
-            res.status(200).json(data.rows);
+            res.status(200).json(data);
         } catch (err) {
             next(new HttpException(400, err.message));
         }

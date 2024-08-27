@@ -17,8 +17,8 @@ class ItemService {
     };
 
     getAll = async () => {
-        const data = await pool.query("SELECT * FROM items");
-        return data;
+        const data = await pool.query(queries.getAll);
+        return data.rows;
     };
 
     getOne = async (id) => {

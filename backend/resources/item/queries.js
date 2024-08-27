@@ -4,4 +4,6 @@ const setup =
 const create =
     "INSERT INTO items (item_name, price, preparation_time, image_url) VALUES ($1, $2, $3, $4) RETURNING *";
 
+const getAll = "SELECT * FROM items";
+
 export default { setup, create };
