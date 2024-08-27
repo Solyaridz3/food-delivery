@@ -29,6 +29,12 @@ class OrderController {
             authMiddleware,
             this.getUserOrders
         );
+
+        this.router.get(
+            `${this.path}/order-items`,
+            authMiddleware,
+            this.getOrderItems
+        );
     }
 
     setup = async (req, res, next) => {
@@ -47,16 +53,17 @@ class OrderController {
             const order = await this.#orderService.getOrder(orderId);
             res.status(200).json(order);
         } catch (err) {
-            throw new HttpException(404, err.message);
+            next(new HttpException(404, err.message));
         }
     };
 
     getUserOrders = async (req, res, next) => {
         try {
-            const userOrders = await this.#orderService.getUserOrders();
+            const userId = req.user;
+            const userOrders = await this.#orderService.getUserOrders(userId);
             res.status(200).json({ user_orders: userOrders });
         } catch (err) {
-            throw new HttpException(404, err.message);
+            next(new HttpException(404, err.message));
         }
     };
 
@@ -71,7 +78,17 @@ class OrderController {
             );
             res.status(201).json({ order_id: orderId });
         } catch (err) {
-            throw new HttpException(400, err.message);
+            next(new HttpException(404, err.message));
+        }
+    };
+
+    getOrderItems = async (req, res, next) => {
+        try {
+            const orderId = req.query.order_id;
+            const items = await this.#orderService.getOrderItems(orderId);
+            res.status(200).json({ items });
+        } catch (err) {
+            next(new HttpException(404, err.message));
         }
     };
 }

@@ -13,4 +13,7 @@ const getUserOrders = "SELECT * FROM orders WHERE user_id = $1";
 const setDelivered =
     "UPDATE orders SET delivery_status = $1 WHERE order_id = $2";
 
-export default { setup, create, getOne, setDelivered, getUserOrders, setupOrderItems };
+
+const getOrderItems = "SELECT item_id, quantity, item_price from order_items WHERE order_id = $1";
+
+export default { setup, create, getOne, setDelivered, getUserOrders, setupOrderItems, getOrderItems };

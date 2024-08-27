@@ -37,11 +37,9 @@ class OrderService {
             [itemIds]
         );
         let totalPreparationTime = 0;
-
+        let totalPrice = 0;
         items.forEach((item) => {
-            const itemData = itemsData.rows.find(
-                (row) => row.item_id === item.itemId
-            );
+            const itemData = itemsData.rows.find((row) => row.item_id === item.item_id);
             const itemTotalPrice = itemData.price * item.quantity;
             totalPrice += itemTotalPrice;
             totalPreparationTime += itemData.preparation_time;
@@ -51,9 +49,8 @@ class OrderService {
         const timeToDrive = distanceInfo.duration.text;
         const totalTime = totalPreparationTime + parseInt(timeToDrive);
         const deliveryTime = await this.calculateDeliveryTime(totalTime);
-        const deliveryCost = timeToDrive * 0.5;
+        const deliveryCost = parseInt(timeToDrive) * 0.5;
         totalPrice += deliveryCost;
-
         const queryResult = await pool.query(queries.create, [
             userId,
             totalPrice,
@@ -68,9 +65,9 @@ class OrderService {
                 "INSERT INTO order_items (order_id, item_id, quantity, item_price) VALUES ($1, $2, $3, $4)",
                 [
                     orderId,
-                    item.itemId,
+                    item.item_id,
                     item.quantity,
-                    itemsData.rows.find((row) => row.item_id === item.itemId)
+                    itemsData.rows.find((row) => row.item_id === item.item_id)
                         .price,
                 ]
             )
@@ -86,6 +83,16 @@ class OrderService {
         const order = await pool.query(queries.getOne, [orderId]);
         return order.rows[0];
     };
+
+    getUserOrders = async (userId) => {
+        const queryResult = await pool.query(queries.getUserOrders, [userId]);
+        return queryResult.rows;
+    };
+
+    getOrderItems = async(orderId) => {
+        const queryResult = await pool.query(queries.getOrderItems, [orderId]);
+        return queryResult.rows;
+    }
 }
 
 export default OrderService;
