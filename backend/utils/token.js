@@ -10,9 +10,14 @@ function base64UrlEncode(str) {
         .replace(/\//g, "_");
 }
 
-function createToken(user) {
+function createToken(user, expiresIn = 10) {
     const header = { alg: "HS256", typ: "JWT" };
-    const payload = { id: user.id, role: user.userRole };
+    const currentTime = Math.floor(Date.now() / 1000);
+    const payload = {
+        id: user.id,
+        role: user.user_role,
+        expires: currentTime + expiresIn,
+    };
     const encodedHeader = base64UrlEncode(JSON.stringify(header));
     const encodedPayload = base64UrlEncode(JSON.stringify(payload));
 
@@ -45,7 +50,15 @@ function verifyToken(token) {
     const payload = JSON.parse(
         Buffer.from(encodedPayload, "base64").toString()
     );
+
+    const currentTime = Math.floor(Date.now() / 1000);
+
+    if (payload.expires && currentTime > payload.expires) {
+        throw new Error("Token has expired");
+    }
+    
     return payload;
 }
+
 
 export default { createToken, verifyToken };
