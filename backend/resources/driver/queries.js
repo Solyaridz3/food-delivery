@@ -1,2 +1,19 @@
 const setup =
-    "CREATE TABLE Drivers (driver_id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, phone VARCHAR(20) NOT NULL, location VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, status VARCHAR(255) NOT NULL)";
+    "CREATE TABLE drivers (driver_id SERIAL PRIMARY KEY, user_id INT UNIQUE NOT NULL, FOREIGN KEY (user_id) REFERENCES users(id), status VARCHAR(30) DEFAULT 'available')";
+
+const registerDriver = "INSERT into drivers (user_id) VALUES ($1) RETURNING *";
+
+const changeStatus =
+    "UPDATE drivers SET status = $1 WHERE user_id = $2 RETURNING status";
+
+const getAvailableDrivers = "SELECT * FROM drivers WHERE status = 'available'";
+
+const getAllDrivers = "SELECT * FROM drivers";
+
+export default {
+    setup,
+    registerDriver,
+    changeStatus,
+    getAvailableDrivers,
+    getAllDrivers,
+};
