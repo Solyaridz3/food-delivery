@@ -16,6 +16,7 @@ class DriverService {
     };
 
     registerDriver = async (userId) => {
+        await pool.query(queries.setUserDriverStatus, [userId]);
         const queryResult = await pool.query(queries.registerDriver, [userId]);
         return queryResult.rows[0];
     };
