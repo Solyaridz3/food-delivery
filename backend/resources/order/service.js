@@ -2,8 +2,11 @@ import pool from "../../db.js";
 import queries from "./queries.js";
 import getDistance from "../../utils/location.js";
 import asyncTimeout from "../../utils/asyncTImeout.js";
+import DriverService from "../driver/service.js";
 
 class OrderService {
+    #driverService = new DriverService();
+
     setup = async () => {
         await pool.query(queries.setup);
         await pool.query(queries.setupOrderItems);
@@ -39,7 +42,9 @@ class OrderService {
         let totalPreparationTime = 0;
         let totalPrice = 0;
         items.forEach((item) => {
-            const itemData = itemsData.rows.find((row) => row.item_id === item.item_id);
+            const itemData = itemsData.rows.find(
+                (row) => row.item_id === item.item_id
+            );
             const itemTotalPrice = itemData.price * item.quantity;
             totalPrice += itemTotalPrice;
             totalPreparationTime += itemData.preparation_time;
@@ -51,10 +56,19 @@ class OrderService {
         const deliveryTime = await this.calculateDeliveryTime(totalTime);
         const deliveryCost = parseInt(timeToDrive) * 0.5;
         totalPrice += deliveryCost;
+        const availableDrivers =
+            await this.#driverService.getAvailableDrivers();
+
+        if (availableDrivers.length === 0) {
+            throw new Error("Sorry there are no available drivers now");
+        }
+
+        const driver = availableDrivers[0];
+
         const queryResult = await pool.query(queries.create, [
             userId,
+            driver.driver_id,
             totalPrice,
-            "pending",
             deliveryTime,
         ]);
 
@@ -72,9 +86,12 @@ class OrderService {
                 ]
             )
         );
+
         await Promise.all(orderItemsPromises);
 
         this.setDelivered(orderId, totalTime);
+
+        this.#driverService.changeStatus("delivering", driver.driver_id);
 
         return orderId;
     };
@@ -89,10 +106,10 @@ class OrderService {
         return queryResult.rows;
     };
 
-    getOrderItems = async(orderId) => {
+    getOrderItems = async (orderId) => {
         const queryResult = await pool.query(queries.getOrderItems, [orderId]);
         return queryResult.rows;
-    }
+    };
 }
 
 export default OrderService;
