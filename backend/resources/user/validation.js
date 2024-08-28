@@ -6,6 +6,7 @@ const register = Joi.object({
     email: Joi.string().email().required(),
 
     password: Joi.string().min(6).required(),
+    phone: Joi.string().min(6).max(20).required(),
 });
 
 const login = Joi.object({
@@ -19,10 +20,11 @@ const deleteUser = Joi.object({
 });
 
 const updateUser = Joi.object({
-    old_password: Joi.string().required(),
+    password: Joi.string().required(),
     name: Joi.string().max(30),
     email: Joi.string().email(),
-    password: Joi.string().min(6),
+    new_password: Joi.string().min(6),
+    phone: Joi.string().min(6).max(20),
 });
 
 export default { register, login, deleteUser, updateUser };

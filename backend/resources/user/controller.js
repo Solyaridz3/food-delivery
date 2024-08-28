@@ -55,10 +55,11 @@ class UserController {
     register = async (req, res, next) => {
         try {
             const userRole = "user";
-            const { name, email, password } = req.body;
+            const { name, email, phone, password} = req.body;
             const token = await this.#userService.register(
                 name,
                 email,
+                phone,
                 password,
                 userRole
             );
@@ -95,7 +96,7 @@ class UserController {
     updateUser = async (req, res, next) => {
         try {
             const id = req.user;
-            const { password, name, email, new_password } = req.body;
+            const { password, name, email, new_password, phone } = req.body;
 
             if (!password)
                 return next(

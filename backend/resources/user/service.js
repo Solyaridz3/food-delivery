@@ -21,11 +21,12 @@ class UserService {
         return result.rows[0];
     };
 
-    register = async (name, email, password, userRole) => {
+    register = async (name, email, phone, password, userRole) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         await pool.query(queries.register, [
             name,
             email,
+            phone,
             hashedPassword,
             userRole,
         ]);
@@ -83,7 +84,7 @@ class UserService {
             if (!isPasswordValid) {
                 throw new Error("You entered invalid password");
             }
-            
+
             if (data.new_password) {
                 const hash = await bcrypt.hash(data.password, 10);
                 user.password = hash;
@@ -96,7 +97,9 @@ class UserService {
             if (data.name) {
                 user.name = data.name;
             }
-            delete user.userrole;
+            if (data.phone) {
+                user.phone = data.phone;
+            }
 
             await pool.query(queries.updateUser, Object.values(user));
 
