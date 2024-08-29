@@ -4,15 +4,6 @@ import token from "../../utils/token.js";
 import queries from "./queries.js";
 
 class UserService {
-
-    findUser = async (id) => {
-        const user = await pool.query(queries.getById, [id]);
-        if (result.rows.length === 0) {
-            throw new Error("User not found");
-        }
-        return result.rows[0];
-    };
-
     register = async (name, email, phone, password, userRole) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const queryResult = await pool.query(queries.register, [
@@ -47,13 +38,6 @@ class UserService {
         const accessToken = token.createToken(user);
 
         return accessToken;
-    };
-
-    delete = async (id) => {
-        try {
-        } catch {
-            throw new Error("Unable to delete user or user does not exist");
-        }
     };
 
     update = async (data) => {
