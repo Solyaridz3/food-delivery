@@ -7,11 +7,6 @@ import DriverService from "../driver/service.js";
 class OrderService {
     #driverService = new DriverService();
 
-    setup = async () => {
-        await pool.query(queries.setup);
-        await pool.query(queries.setupOrderItems);
-    };
-
     calculateDeliveryTime = async (totalTime) => {
         const date = new Date();
         date.setMinutes(date.getMinutes() + totalTime);
@@ -96,8 +91,12 @@ class OrderService {
         return orderId;
     };
 
-    getOrder = async (orderId) => {
-        const order = await pool.query(queries.getOne, [orderId]);
+    getOrder = async (orderId, userId) => {
+        const queryResult = await pool.query(queries.getOrderById, [orderId]);
+        const order = queryResult.rows[0];
+        if (order.user_id !== userId) {
+            throw new Error("Forbidden. This is not your order.");
+        }
         return order.rows[0];
     };
 

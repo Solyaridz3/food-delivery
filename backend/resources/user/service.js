@@ -4,14 +4,6 @@ import token from "../../utils/token.js";
 import queries from "./queries.js";
 
 class UserService {
-    getUsers = async () => {
-        const data = await pool.query(queries.getAll);
-        return data;
-    };
-
-    setup = async () => {
-        await pool.query(queries.setup);
-    };
 
     findUser = async (id) => {
         const user = await pool.query(queries.getById, [id]);
@@ -23,7 +15,7 @@ class UserService {
 
     register = async (name, email, phone, password, userRole) => {
         const hashedPassword = await bcrypt.hash(password, 10);
-        await pool.query(queries.register, [
+        const queryResult = await pool.query(queries.register, [
             name,
             email,
             phone,
@@ -31,11 +23,9 @@ class UserService {
             userRole,
         ]);
 
-        const result = await pool.query(queries.getByEmail, [email]);
+        const user = queryResult.rows[0];
 
-        const createdUser = result.rows[0];
-
-        const accessToken = token.createToken(createdUser);
+        const accessToken = token.createToken(user);
 
         return accessToken;
     };
@@ -76,40 +66,56 @@ class UserService {
 
             const user = queryResult.rows[0];
 
+            // Check if the current password is correct
             const isPasswordValid = await bcrypt.compare(
                 data.password,
                 user.password
             );
-
             if (!isPasswordValid) {
-                throw new Error("You entered invalid password");
+                throw new Error("You entered an invalid password");
             }
 
+            const updatedFields = {};
+
             if (data.new_password) {
-                const hash = await bcrypt.hash(data.password, 10);
-                user.password = hash;
+                updatedFields.password = await bcrypt.hash(
+                    data.new_password,
+                    10
+                );
             }
 
             if (data.email) {
-                user.email = data.email;
+                updatedFields.email = data.email;
             }
 
             if (data.name) {
-                user.name = data.name;
+                updatedFields.name = data.name;
             }
+
             if (data.phone) {
-                user.phone = data.phone;
+                updatedFields.phone = data.phone;
             }
 
-            await pool.query(queries.updateUser, Object.values(user));
+            if (Object.keys(updatedFields).length === 0) {
+                throw new Error("No fields provided for update.");
+            }
 
-            const { password, ...newUserData } = user; // in order to omit password
+            const newUser = { ...user, ...updatedFields };
 
+            await pool.query(queries.updateUser, [
+                newUser.name,
+                newUser.email,
+                newUser.phone,
+                newUser.password,
+                newUser.id,
+            ]);
+
+            const { password, ...newUserData } = newUser;
             return newUserData;
         } catch (error) {
             throw new Error(
                 error.message ||
-                    "Unable to update user, please check again given information."
+                    "Unable to update user, please check the provided information."
             );
         }
     };

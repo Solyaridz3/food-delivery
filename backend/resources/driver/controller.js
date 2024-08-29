@@ -13,7 +13,6 @@ class DriverController {
     }
 
     initializeRoutes() {
-        this.router.get(`${this.path}/setup`, this.setup);
         this.router.post(
             `${this.path}/register`,
             authenticated,
@@ -35,15 +34,6 @@ class DriverController {
         this.router.get(`${this.path}`, this.getAllDrivers);
     }
 
-    setup = async (req, res, next) => {
-        try {
-            await this.#driverService.setup();
-            res.sendStatus(200);
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-        }
-    };
 
     changeStatus = (status) => async (req, res, next) => {
         try {

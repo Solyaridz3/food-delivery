@@ -15,18 +15,7 @@ class ItemController {
         this.initializeRoutes();
     }
 
-    setup = async (req, res, next) => {
-        try {
-            await this.#itemService.setup();
-            res.sendStatus(200);
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-        }
-    };
-
     initializeRoutes() {
-        this.router.get(`${this.path}/setup`, this.setup);
         this.router.get(`${this.path}/`, this.getAll);
         this.router.post(
             `${this.path}/`,

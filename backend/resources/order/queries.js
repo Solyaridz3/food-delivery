@@ -7,7 +7,7 @@ const setupOrderItems =
 const create =
     "INSERT INTO orders (user_id, driver_id, order_total, delivery_time) VALUES ($1, $2, $3, $4) RETURNING order_id;";
 
-const getOne = "SELECT * FROM orders WHERE order_id = $1";
+const getOrderById = "SELECT * FROM orders WHERE order_id = $1";
 
 const getUserOrders = "SELECT * FROM orders WHERE user_id = $1";
 
@@ -20,7 +20,7 @@ const getOrderItems =
 export default {
     setup,
     create,
-    getOne,
+    getOrderById,
     setDelivered,
     getUserOrders,
     setupOrderItems,

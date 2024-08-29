@@ -1,11 +1,11 @@
 import express from "express";
-import { errorMiddleware as ErrorHandler } from "./middleware/index.js";
+import {errorMiddleware as ErrorHandler} from './middleware/error.middleware.js';
 
 class App {
     constructor(controllers, port) {
         this.express = express();
         this.port = port;
-
+        
         this.#initializeMiddleware();
         this.#initializeControllers(controllers);
         this.#initializeErrorHandling();

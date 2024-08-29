@@ -2,10 +2,6 @@ import pool from "../../db.js";
 import queries from "./queries.js";
 
 class DriverService {
-    setup = async () => {
-        await pool.query(queries.setup);
-    };
-
     changeStatus = async (status, userId) => {
         const queryResult = await pool.query(queries.changeStatus, [
             status,

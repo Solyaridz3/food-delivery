@@ -15,8 +15,6 @@ class UserController {
     }
 
     initializeRoutes() {
-        this.router.get(`${this.path}/setup`, this.setup);
-        this.router.get(`${this.path}/`, this.getUsers);
         this.router.post(
             `${this.path}/register`,
             validationMiddleware(validate.register),
@@ -27,35 +25,13 @@ class UserController {
             validationMiddleware(validate.login),
             this.login
         );
-        this.router.patch(
-            `${this.path}/`,
-            authMiddleware,
-            this.updateUser
-        )
+        this.router.patch(`${this.path}/`, authMiddleware, this.updateUser);
     }
-    setup = async (req, res, next) => {
-        try {
-            await this.#userService.setup();
-            res.sendStatus(200);
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-        }
-    };
-
-    getUsers = async (req, res, next) => {
-        try {
-            const data = await this.#userService.getUsers();
-            return res.status(200).json(data.rows);
-        } catch (err) {
-            next(new HttpException(400, err.message));
-        }
-    };
 
     register = async (req, res, next) => {
         try {
             const userRole = "user";
-            const { name, email, phone, password} = req.body;
+            const { name, email, phone, password } = req.body;
             const token = await this.#userService.register(
                 name,
                 email,
@@ -66,7 +42,7 @@ class UserController {
             return res.status(201).json({ token });
         } catch (err) {
             console.log(err);
-            next(new HttpException(400, err.message));
+            next(new HttpException(401, err.message));
         }
     };
 
@@ -95,15 +71,19 @@ class UserController {
 
     updateUser = async (req, res, next) => {
         try {
-            const id = req.user;
-            const { password, name, email, new_password, phone } = req.body;
+            const userId = req.user;
+            const { password, new_password, ...updateData } = req.body;
 
-            if (!password)
+            if (!password) {
                 return next(
-                    new HttpException(400, "You have to enter current password")
+                    new HttpException(
+                        400,
+                        "You have to enter the current password"
+                    )
                 );
+            }
 
-            const data = { id, password, name, email, new_password };
+            const data = { id: userId, password, new_password, ...updateData };
 
             const updatedUser = await this.#userService.update(data);
 

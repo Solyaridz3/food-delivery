@@ -1,7 +1,7 @@
 import { Router } from "express";
 import OrderService from "./service.js";
 import HttpException from "../../utils/exceptions/HttpException.js";
-import { authMiddleware } from "../../middleware/auth.middleware.js";
+import { authMiddleware as authenticated } from "../../middleware/auth.middleware.js";
 import { validationMiddleware } from "../../middleware/validation.middleware.js";
 import validate from "./validation.js";
 
@@ -15,41 +15,31 @@ class OrderController {
     }
 
     initializeRoutes() {
-        this.router.get(`${this.path}/setup`, this.setup);
-        this.router.get(`${this.path}/`, authMiddleware, this.getOrder);
+        this.router.get(`${this.path}/:orderId`, authenticated, this.getOrder);
 
         this.router.post(
             `${this.path}/`,
-            [authMiddleware, validationMiddleware(validate.makeOrder)],
+            [authenticated, validationMiddleware(validate.makeOrder)],
             this.makeOrder
         );
 
         this.router.get(
             `${this.path}/user-orders`,
-            authMiddleware,
+            authenticated,
             this.getUserOrders
         );
 
         this.router.get(
             `${this.path}/order-items`,
-            authMiddleware,
+            authenticated,
             this.getOrderItems
         );
     }
 
-    setup = async (req, res, next) => {
-        try {
-            await this.#orderService.setup();
-            res.sendStatus(200);
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-        }
-    };
-
     getOrder = async (req, res, next) => {
         try {
-            const orderId = req.query.order_id;
+            const userId = req.user;
+            const orderId = req.params.orderId;
             const order = await this.#orderService.getOrder(orderId);
             res.status(200).json(order);
         } catch (err) {
