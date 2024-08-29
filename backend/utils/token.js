@@ -10,7 +10,7 @@ function base64UrlEncode(str) {
         .replace(/\//g, "_");
 }
 
-function createToken(user, expiresIn = 10) {
+function createToken(user, expiresIn = 7200) {
     const header = { alg: "HS256", typ: "JWT" };
     const currentTime = Math.floor(Date.now() / 1000);
     const payload = {
