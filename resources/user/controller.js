@@ -39,6 +39,7 @@ class UserController {
                 password,
                 userRole
             );
+            
             return res.status(201).json({ token });
         } catch (err) {
             console.log(err);
@@ -49,8 +50,8 @@ class UserController {
     login = async (req, res, next) => {
         try {
             const { email, password } = req.body;
-            const user = await this.#userService.login(email, password);
-            return res.status(200).json({ user });
+            const token = await this.#userService.login(email, password);
+            return res.status(200).json({ token });
         } catch (err) {
             next(new HttpException(401, err.message));
         }

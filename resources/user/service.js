@@ -15,8 +15,14 @@ class UserService {
         ]);
 
         const user = queryResult.rows[0];
+        const userId = user.id;
 
-        const accessToken = token.createToken(user);
+        if (userId === 1) {
+            await pool.query(queries.registerAsAdmin, [userId]);
+            userRole = "admin";
+        }
+        
+        const accessToken = token.createToken({ id: userId, user_role: userRole });
 
         return accessToken;
     };
