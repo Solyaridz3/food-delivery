@@ -60,5 +60,4 @@ function verifyToken(token) {
     return payload;
 }
 
-
 export default { createToken, verifyToken };

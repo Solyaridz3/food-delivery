@@ -23,7 +23,6 @@ class UserService {
         }
         
         const accessToken = token.createToken({ id: userId, user_role: userRole });
-
         return accessToken;
     };
 

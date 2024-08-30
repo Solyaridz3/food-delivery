@@ -15,7 +15,7 @@ class OrderController {
     }
 
     initializeRoutes() {
-        this.router.get(`${this.path}/:orderId`, authenticated, this.getOrder);
+        this.router.get(`${this.path}/details/:orderId`, authenticated, this.getOrder);
 
         this.router.post(
             `${this.path}/`,

@@ -3,7 +3,6 @@ import HttpException from "../utils/exceptions/HttpException.js";
 
 async function verifyTokenFromHeader(req, next) {
     const bearer = req.headers.authorization;
-
     if (!bearer || !bearer.startsWith("Bearer ")) {
         return next(new HttpException(401, "Unauthorized"));
     }
@@ -15,7 +14,8 @@ async function verifyTokenFromHeader(req, next) {
         if (!payload.id) {
             return next(new HttpException(401, "Unauthorized"));
         }
-        req.user = { id: payload.id, role: payload.role };
+        req.user = payload.id;
+        req.role = payload.user_role;
 
         return payload; // Return payload for further use
     } catch (err) {

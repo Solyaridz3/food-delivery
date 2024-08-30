@@ -93,6 +93,9 @@ class OrderService {
 
     getOrder = async (orderId, userId) => {
         const queryResult = await pool.query(queries.getOrderById, [orderId]);
+        if (queryResult.rows.length === 0) {
+            throw new Error("Order not found");
+        }
         const order = queryResult.rows[0];
         if (order.user_id !== userId) {
             throw new Error("Forbidden. This is not your order.");

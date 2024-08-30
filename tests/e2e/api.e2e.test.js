@@ -43,6 +43,7 @@ describe("API E2E Tests", () => {
             token: expect.any(String),
         });
     });
+    let adminToken;
 
     it("should login user", async () => {
         const body = {
@@ -55,5 +56,14 @@ describe("API E2E Tests", () => {
         expect(res.body).toEqual({
             token: expect.any(String),
         });
+        adminToken = res.body.token;
+    });
+
+    it("should get user orders", async () => {
+        const res = await request(app)
+            .get("/api/v2/orders/user-orders")
+            .set("Authorization", `Bearer ${adminToken}`);
+        expect(res.statusCode).toEqual(200);
+        console.log(res.body);
     });
 });

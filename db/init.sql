@@ -31,3 +31,13 @@ CREATE TABLE IF NOT EXISTS orders (
     delivery_time VARCHAR(10) NOT NULL, FOREIGN KEY (user_id) REFERENCES users(id), 
     FOREIGN KEY (driver_id) REFERENCES drivers(driver_id)
 );
+
+CREATE TABLE IF NOT EXISTS order_items (
+    order_item_id SERIAL PRIMARY KEY,
+    order_id INT NOT NULL,
+    item_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    item_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id), 
+    FOREIGN KEY (item_id) REFERENCES items(item_id)
+);
