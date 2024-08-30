@@ -1,15 +1,22 @@
 import express from "express";
-import {errorMiddleware as ErrorHandler} from './middleware/error.middleware.js';
+import { errorMiddleware as ErrorHandler } from "./middleware/error.middleware.js";
+import { testConnection } from "./db.js";
 
 class App {
     constructor(controllers, port) {
         this.express = express();
         this.port = port;
-        
+
+        this.#initializeDataBaseConnection();
         this.#initializeMiddleware();
         this.#initializeControllers(controllers);
         this.#initializeErrorHandling();
     }
+
+    #initializeDataBaseConnection() {
+        testConnection();
+    }
+
     #initializeMiddleware() {
         this.express.use(express.json());
     }

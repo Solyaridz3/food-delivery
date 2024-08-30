@@ -21,3 +21,4 @@ const controllers = [
 const app = new App(controllers, PORT);
 
 app.listen();
+

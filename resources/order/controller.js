@@ -40,7 +40,7 @@ class OrderController {
         try {
             const userId = req.user;
             const orderId = req.params.orderId;
-            const order = await this.#orderService.getOrder(orderId);
+            const order = await this.#orderService.getOrder(orderId, userId);
             res.status(200).json(order);
         } catch (err) {
             next(new HttpException(404, err.message));
