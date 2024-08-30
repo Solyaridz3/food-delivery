@@ -46,7 +46,6 @@ class ItemController {
 
     createItem = async (req, res, next) => {
         try {
-            console.log(req.user);
             const image = req.file;
             const { name, price, preparation_time } = req.body;
             const item = await this.#itemService.create(

@@ -7,7 +7,6 @@ import DriverController from "../../resources/driver/controller.js";
 import AdminController from "../../resources/admin/controller.js";
 import token from "../../utils/token.js";
 
-// Initialize controllers for the test
 const controllers = [
     new UserController(),
     new ItemController(),
@@ -20,8 +19,9 @@ const app = new App(controllers, 3000).express;
 
 describe("API E2E Tests", () => {
     it("should show that user is unauthorized", async () => {
-        const res = await request(app).get("/api/v2/orders/1");
+        const res = await request(app).get("/api/v2/orders/details/1");
         expect(res.statusCode).toBe(401);
+        console.log(res.body);
         expect(res.body).toEqual({
             status: 401,
             message: "Unauthorized",
@@ -64,6 +64,5 @@ describe("API E2E Tests", () => {
             .get("/api/v2/orders/user-orders")
             .set("Authorization", `Bearer ${adminToken}`);
         expect(res.statusCode).toEqual(200);
-        console.log(res.body);
     });
 });
