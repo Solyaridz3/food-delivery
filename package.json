@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "up-test": "docker-compose down && docker-compose up db test --build",
-        "up-app": "docker-compose up db app --build --env-file=.env",
+        "up-app": "docker-compose up db app --build",
         "start": "node index.js --env-file=.env",
         "dev": "nodemon index.js",
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles"

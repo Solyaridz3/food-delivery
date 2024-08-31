@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS drivers (
-    driver_id SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY, 
     user_id INT UNIQUE NOT NULL, 
     FOREIGN KEY (user_id) REFERENCES users(id), 
     status VARCHAR(30) DEFAULT 'available'
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS orders (
     order_total DECIMAL(10,2) NOT NULL,
     delivery_status VARCHAR(20) DEFAULT 'pending', 
     delivery_time VARCHAR(10) NOT NULL, FOREIGN KEY (user_id) REFERENCES users(id), 
-    FOREIGN KEY (driver_id) REFERENCES drivers(driver_id)
+    FOREIGN KEY (driver_id) REFERENCES drivers(id)
 );
 
 CREATE TABLE IF NOT EXISTS order_items (

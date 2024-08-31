@@ -1,5 +1,5 @@
-const setupOrderItems =
-    "CREATE TABLE order_items (order_item_id SERIAL PRIMARY KEY, order_id INT NOT NULL, item_id INT NOT NULL,  quantity INT NOT NULL DEFAULT 1, item_price DECIMAL(10,2) NOT NULL, FOREIGN KEY (order_id) REFERENCES orders(order_id), FOREIGN KEY (item_id) REFERENCES items(item_id))";
+const insertOrderItems =
+    "INSERT INTO order_items (order_id, item_id, quantity, item_price) VALUES ($1, $2, $3, $4)";
 
 const create =
     "INSERT INTO orders (user_id, driver_id, order_total, delivery_time) VALUES ($1, $2, $3, $4) RETURNING order_id;";
@@ -19,6 +19,6 @@ export default {
     getOrderById,
     setDelivered,
     getUserOrders,
-    setupOrderItems,
     getOrderItems,
+    insertOrderItems,
 };
