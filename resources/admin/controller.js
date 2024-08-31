@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { response, Router } from "express";
 import AdminService from "./service.js";
 import { isAdmin } from "../../middleware/auth.middleware.js";
 import HttpException from "../../utils/exceptions/HttpException.js";
@@ -34,6 +34,7 @@ class AdminController {
         this.router.get(`${this.path}/orders`, isAdmin, this.getAllOrders);
 
         // Drivers
+        this.router.get(`${this.path}/drivers`, isAdmin, this.getAllDrivers);
     }
     // Orders
 
@@ -86,7 +87,26 @@ class AdminController {
         }
     };
 
-    deleteItem = async (req, res, next) => {};
+    deleteItem = async (req, res, next) => {
+        try {
+            const itemId = req.params.id;
+            await this.#adminService.deleteItem(itemId);
+            res.sendStatus(204);
+        } catch (err) {
+            next(new HttpException(response.status | 404, err.message));
+        }
+    };
+
+    // Drivers
+
+    getAllDrivers = async (req, res, next) => {
+        try {
+            const drivers = await this.#adminService.getAllDrivers();
+            res.status(200).json({ drivers });
+        } catch (err) {
+            next(new HttpException(400, err.message));
+        }
+    };
 }
 
 export default AdminController;

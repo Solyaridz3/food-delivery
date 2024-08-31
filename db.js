@@ -3,7 +3,7 @@ import pg from "pg";
 const { Pool } = pg;
 
 const pool = new Pool({
-    host: "db",
+    host: "test-db",
     port: 5432,
     user: "user",
     password: "food-del",

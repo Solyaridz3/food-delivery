@@ -64,6 +64,18 @@ class AdminService {
 
         return item.rows;
     };
+
+    deleteItem = async (itemId) => {
+        await pool.query(queries.deleteItem, [itemId]);
+    };
+
+    // Drivers
+
+    getAllDrivers = async () => {
+        const queryResult = await pool.query(queries.getAllDrivers);
+        const drivers = queryResult.rows;
+        return drivers;
+    };
 }
 
 export default AdminService;

@@ -22,7 +22,7 @@ class OrderController {
       this.makeOrder
     );
     this.router.get(`${this.path}/user-orders`, authenticated, this.getUserOrders);
-    this.router.get(`${this.path}/order-items`, authenticated, this.getOrderItems);
+    this.router.get(`${this.path}/order-items/:orderId`, authenticated, this.getOrderItems);
   }
 
   getOrder = async (req, res, next) => {
@@ -59,7 +59,7 @@ class OrderController {
 
   getOrderItems = async (req, res, next) => {
     try {
-      const orderId = req.query.order_id;
+      const orderId = req.params.orderId;
       const items = await this.#orderService.getOrderItems(orderId);
       res.status(200).json({ items });
     } catch (err) {

@@ -29,11 +29,8 @@ class OrderService {
 
     create = async (userId, items, address) => {
         try {
-            const itemIds = items.map((item) => item.item_id);
-            const itemsData = await pool.query(
-                `SELECT item_id, price, preparation_time FROM items WHERE item_id = ANY($1::int[])`,
-                [itemIds]
-            );
+            const itemIds = items.map((item) => item.id);
+            const itemsData = await pool.query(queries.getItemsData, [itemIds]);
 
             let totalPreparationTime = 0;
             let totalPrice = 0;
@@ -61,30 +58,27 @@ class OrderService {
             const driver = availableDrivers[0];
             const queryResult = await pool.query(queries.create, [
                 userId,
-                driver.driver_id,
+                driver.id,
                 totalPrice,
                 deliveryTime,
             ]);
 
-            const orderId = queryResult.rows[0].order_id;
+            const orderId = queryResult.rows[0].id;
             const orderItemsPromises = items.map((item) =>
-                pool.query(
-                    "INSERT INTO order_items (order_id, item_id, quantity, item_price) VALUES ($1, $2, $3, $4)",
-                    [
-                        orderId,
-                        item.item_id,
-                        item.quantity,
-                        itemsData.rows.find(
-                            (row) => row.item_id === item.item_id
-                        ).price,
-                    ]
-                )
+                pool.query(queries.insertOrderItems, [
+                    orderId,
+                    item.item_id,
+                    item.quantity,
+                    itemsData.rows.find((row) => row.item_id === item.item_id)
+                        .price,
+                ])
             );
 
             await Promise.all(orderItemsPromises);
 
             this.setDelivered(orderId, totalTime);
-            this.#driverService.changeStatus("delivering", driver.driver_id);
+
+            this.#driverService.changeStatus("delivering", driver.id);
 
             return orderId;
         } catch (error) {
