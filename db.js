@@ -1,4 +1,5 @@
 import pg from "pg";
+import asyncTimeout from "./utils/asyncTImeout.js";
 
 const { Pool } = pg;
 
@@ -13,6 +14,7 @@ const pool = new Pool({
 
 export const testConnection = async () => {
     try {
+        await asyncTimeout(15000);
         const client = await pool.connect();
         console.log("Connected to the database successfully");
         await client.release();
