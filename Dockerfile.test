@@ -13,4 +13,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD [".github/wait-for-it.sh", "db:5432", "--strict", "--", "npm", "run", "test"]
+CMD ["ls",".github/wait-for-it.sh", "db:5432", "--strict", "--", "npm", "run", "test"]
