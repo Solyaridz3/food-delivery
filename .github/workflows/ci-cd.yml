@@ -37,7 +37,7 @@ jobs:
           node-version: 20
 
       - name: Build Docker images
-        run: docker-compose build
+        run: docker compose build
 
       - name: Run Tests
         run: docker-compose up --abort-on-container-exit --exit-code-from test test
