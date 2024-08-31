@@ -3,16 +3,15 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - fixes
   pull_request:
     branches:
-      - main
+      - fixes
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    services:
+    services: 
       db:
         image: postgres
         env:
@@ -35,17 +34,27 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
+      - name: Build App Image
         uses: docker/build-push-action@v4
         with:
           context: .
           file: Dockerfile
           tags: food-del-api:latest
 
-      - name: Run tests
+      - name: Build Test Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.test
+          tags: food-del-api-test:latest
+
+      - name: Run App Container
         run: |
-          docker-compose -f docker-compose.yml up -d db
-          docker-compose -f docker-compose.yml run --rm test
+          docker-compose up -d app
+
+      - name: Run Tests
+        run: |
+          docker-compose run --rm test
 
       - name: Lint and Check Formatting
         run: npm run lint
