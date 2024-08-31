@@ -25,4 +25,4 @@ jobs:
         run: docker compose build
 
       - name: Run Tests
-        run: docker compose up --abort-on-container-exit test db
+        run: docker compose up --abort-on-container-exit test test-db
