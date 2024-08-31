@@ -112,7 +112,7 @@ describe("Orders endpoints", () => {
         const res = await request(app)
             .get("/api/v2/orders/user-orders")
             .set("Authorization", `Bearer ${userToken}`);
-        expect(res.statusCode).toEqual(220);
+        expect(res.statusCode).toEqual(200);
     });
 
     it("should return 404 when order not found", async () => {
