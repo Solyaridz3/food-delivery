@@ -13,4 +13,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "./wait-for-it.sh db:5432 --strict -- npm start"]
+CMD ["./wait-for-it.sh", "db:5432", "--strict", "--", "npm", "start"]
