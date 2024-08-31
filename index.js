@@ -17,9 +17,7 @@ const controllers = [
     new DriverController(),
     new AdminController(),
 ];
-console.log("test ci");
 
 const app = new App(controllers, PORT);
 
 app.listen();
-
