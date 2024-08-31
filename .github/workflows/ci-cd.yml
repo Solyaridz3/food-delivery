@@ -25,4 +25,4 @@ jobs:
         run: docker compose build
 
       - name: Run Tests
-        run: docker compose up test
+        run: docker compose up test db
