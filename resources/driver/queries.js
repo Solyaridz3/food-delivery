@@ -5,14 +5,11 @@ const changeStatus =
 
 const getAvailableDrivers = "SELECT * FROM drivers WHERE status = 'available'";
 
-const getAllDrivers = "SELECT * FROM drivers";
-
 const setUserDriverStatus = "UPDATE users SET user_role = 'driver' WHERE id = $1"
 
 export default {
     registerDriver,
     changeStatus,
     getAvailableDrivers,
-    getAllDrivers,
     setUserDriverStatus
 };

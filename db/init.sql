@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS drivers (
 );
 
 CREATE TABLE IF NOT EXISTS items (
-    item_id SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY, 
     item_name VARCHAR(255) NOT NULL,
     price DECIMAL(10,2) NOT NULL, 
     preparation_time INT NOT NULL, 
@@ -40,5 +40,5 @@ CREATE TABLE IF NOT EXISTS order_items (
     quantity INT NOT NULL DEFAULT 1,
     item_price DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id), 
-    FOREIGN KEY (item_id) REFERENCES items(item_id)
+    FOREIGN KEY (item_id) REFERENCES items(id)
 );

@@ -22,12 +22,6 @@ class DriverService {
         const availableDrivers = queryResult.rows;
         return availableDrivers;
     };
-
-    getAllDrivers = async () => {
-        const queryResult = await pool.query(queries.getAllDrivers);
-        const drivers = queryResult.rows;
-        return drivers;
-    };
 }
 
 export default DriverService;

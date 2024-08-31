@@ -29,11 +29,8 @@ class OrderService {
 
     create = async (userId, items, address) => {
         try {
-            const itemIds = items.map((item) => item.item_id);
-            const itemsData = await pool.query(
-                `SELECT item_id, price, preparation_time FROM items WHERE item_id = ANY($1::int[])`,
-                [itemIds]
-            );
+            const itemIds = items.map((item) => item.id);
+            const itemsData = await pool.query(queries.getItemsData, [itemIds]);
 
             let totalPreparationTime = 0;
             let totalPrice = 0;

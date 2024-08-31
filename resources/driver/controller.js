@@ -31,7 +31,6 @@ class DriverController {
         );
 
         this.router.get(`${this.path}/available`, this.getAvailableDrivers);
-        this.router.get(`${this.path}`, this.getAllDrivers);
     }
 
 
@@ -74,14 +73,6 @@ class DriverController {
         }
     };
 
-    getAllDrivers = async (req, res, next) => {
-        try {
-            const drivers = await this.#driverService.getAllDrivers();
-            res.status(200).json({ drivers });
-        } catch (err) {
-            next(new HttpException(400, err.message));
-        }
-    };
 }
 
 export default DriverController;

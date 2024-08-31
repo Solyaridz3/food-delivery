@@ -10,4 +10,16 @@ const getAllUsers = "SELECT id, name, email, phone, user_role FROM users";
 const createItem =
     "INSERT INTO items (item_name, price, preparation_time, image_url) VALUES ($1, $2, $3, $4) RETURNING *";
 
-export default { deleteUser, getAllUsers, getAllOrders, createItem };
+const deleteItem = "DELETE from items WHERE id = $1";
+
+// Drivers
+const getAllDrivers = "SELECT * FROM drivers";
+
+export default {
+    deleteUser,
+    getAllUsers,
+    getAllOrders,
+    createItem,
+    getAllDrivers,
+    deleteItem,
+};
