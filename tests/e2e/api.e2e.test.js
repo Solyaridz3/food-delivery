@@ -5,7 +5,6 @@ import ItemController from "../../resources/item/controller.js";
 import OrderController from "../../resources/order/controller.js";
 import DriverController from "../../resources/driver/controller.js";
 import AdminController from "../../resources/admin/controller.js";
-import pool from "../../db.js";
 
 const controllers = [
     new UserController(),
@@ -18,23 +17,20 @@ const controllers = [
 const app = new App(controllers, 3000).express;
 let userToken;
 let adminToken;
-const expectedUsers = {
-    users: [
-        {
-            name: "John",
-            phone: "123129124",
-            email: "JohnDoe123@gmail.com",
-            password: "JohnDoe123",
-        },
-        {
-            name: "Seriy",
-            phone: "1231329124",
-            email: "Serhiy@gmail.com",
-            password: "serhiy123",
-        },
-    ],
-};
-
+const newUsers = [
+    {
+        name: "John",
+        phone: "123129124",
+        email: "JohnDoe123@gmail.com",
+        password: "JohnDoe123",
+    },
+    {
+        name: "Seriy",
+        phone: "1231329124",
+        email: "Serhiy@gmail.com",
+        password: "serhiy123",
+    },
+];
 
 describe("Users and auth endpoints", () => {
     it("should show that user is unauthorized", async () => {
@@ -47,7 +43,7 @@ describe("Users and auth endpoints", () => {
     });
 
     it("should create first user (admin)", async () => {
-        const adminUser = expectedUsers.users[0];
+        const adminUser = newUsers[0];
         const res = await request(app)
             .post("/api/v2/users/register")
             .send(adminUser);
@@ -60,7 +56,7 @@ describe("Users and auth endpoints", () => {
     });
 
     it("should create another user", async () => {
-        const defaultUser = expectedUsers.users[1];
+        const defaultUser = newUsers[1];
         const res = await request(app)
             .post("/api/v2/users/register")
             .send(defaultUser);
@@ -88,15 +84,22 @@ describe("Users and auth endpoints", () => {
 });
 
 describe("Items endpoints", () => {
+    const keys = ["id", "name", "preparation_time", "image_url", "price"];
+
     it("Should get all available items from menu", async () => {
         const res = await request(app).get("/api/v2/items");
         const items = res.body.items;
-        console.log(res.body);
-        console.log(items);
-        const keys = ["id", "name", "preparation_time", "image_url", "price"];
 
         expect(res.statusCode).toEqual(200);
         expect(Object.keys(items[0]).sort()).toEqual(keys.sort());
+    });
+
+    it("Should get single item", async () => {
+        const res = await request(app).get("/api/v2/items/details/1");
+        console.log(res.body);
+        const item = res.body.item;
+        expect(res.statusCode).toEqual(200);
+        expect(Object.keys(item).sort()).toEqual(keys.sort());
     });
 });
 

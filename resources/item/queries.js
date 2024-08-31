@@ -1,8 +1,8 @@
 
 const getAll = "SELECT * FROM items";
 
-const getList = "SELECT * FROM items WHERE id = ANY($1::int[])";
+const getSelection = "SELECT * FROM items WHERE id = ANY($1::int[])";
 
 const getById = "SELECT * FROM items WHERE id = $1";
 
-export default { getAll, getList, getById };
+export default { getAll, getSelection, getById };
