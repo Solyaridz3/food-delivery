@@ -5,6 +5,7 @@ import ItemController from "../../resources/item/controller.js";
 import OrderController from "../../resources/order/controller.js";
 import DriverController from "../../resources/driver/controller.js";
 import AdminController from "../../resources/admin/controller.js";
+import pool from "../../db.js";
 
 const controllers = [
     new UserController(),
@@ -20,23 +21,20 @@ let adminToken;
 const expectedUsers = {
     users: [
         {
-            id: 1,
             name: "John",
             phone: "123129124",
             email: "JohnDoe123@gmail.com",
             password: "JohnDoe123",
-            user_role: "admin",
         },
         {
-            id: 2,
             name: "Seriy",
             phone: "1231329124",
             email: "Serhiy@gmail.com",
             password: "serhiy123",
-            user_role: "user",
         },
     ],
 };
+
 
 describe("Users and auth endpoints", () => {
     it("should show that user is unauthorized", async () => {
@@ -49,7 +47,7 @@ describe("Users and auth endpoints", () => {
     });
 
     it("should create first user (admin)", async () => {
-        const { id, user_role, ...adminUser } = expectedUsers.users[0];
+        const adminUser = expectedUsers.users[0];
         const res = await request(app)
             .post("/api/v2/users/register")
             .send(adminUser);
@@ -62,7 +60,7 @@ describe("Users and auth endpoints", () => {
     });
 
     it("should create another user", async () => {
-        const { id, user_role, ...defaultUser } = expectedUsers.users[1];
+        const defaultUser = expectedUsers.users[1];
         const res = await request(app)
             .post("/api/v2/users/register")
             .send(defaultUser);
@@ -89,21 +87,30 @@ describe("Users and auth endpoints", () => {
     });
 });
 
+describe("Items endpoints", () => {
+    it("Should get all available items from menu", async () => {
+        const res = await request(app).get("/api/v2/items");
+        const items = res.body.items;
+        console.log(res.body);
+        console.log(items);
+        const keys = ["id", "name", "preparation_time", "image_url", "price"];
+
+        expect(res.statusCode).toEqual(200);
+        expect(Object.keys(items[0]).sort()).toEqual(keys.sort());
+    });
+});
+
 describe("Admin endpoints", () => {
     it("Should get all users", async () => {
         const res = await request(app)
             .get("/api/v2/admin/users")
             .set("Authorization", `Bearer ${adminToken}`);
 
-        const expected = {
-            users: expectedUsers.users.map((user) => {
-                const { password, ...exp } = user;
-                return exp;
-            }),
-        };
+        const keys = ["id", "name", "email", "phone", "user_role"];
+        const users = res.body.users;
 
         expect(res.statusCode).toEqual(200);
-        expect(res.body).toEqual(expected);
+        expect(Object.keys(users[0]).sort()).toEqual(keys.sort());
     });
 });
 

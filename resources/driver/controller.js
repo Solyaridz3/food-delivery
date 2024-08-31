@@ -29,14 +29,14 @@ class DriverController {
             authenticated,
             this.setAvailableStatus
         );
-
-        this.router.get(`${this.path}/available`, this.getAvailableDrivers);
     }
-
 
     changeStatus = (status) => async (req, res, next) => {
         try {
             const userId = req.user;
+            if (user.role !== "driver") {
+                throw new Error("Your account is not registered as a driver");
+            }
             const newStatus = await this.#driverService.changeStatus(
                 status,
                 userId
@@ -62,17 +62,6 @@ class DriverController {
             next(new HttpException(400, err.message));
         }
     };
-
-    getAvailableDrivers = async (req, res, next) => {
-        try {
-            const availableDrivers =
-                await this.#driverService.getAvailableDrivers();
-            res.status(200).json({ availableDrivers });
-        } catch (err) {
-            next(new HttpException(404, err.message));
-        }
-    };
-
 }
 
 export default DriverController;

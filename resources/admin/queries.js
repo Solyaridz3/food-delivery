@@ -8,7 +8,7 @@ const getAllUsers = "SELECT id, name, email, phone, user_role FROM users";
 
 // Items
 const createItem =
-    "INSERT INTO items (item_name, price, preparation_time, image_url) VALUES ($1, $2, $3, $4) RETURNING *";
+    "INSERT INTO items (name, price, preparation_time, image_url) VALUES ($1, $2, $3, $4) RETURNING *";
 
 const deleteItem = "DELETE from items WHERE id = $1";
 

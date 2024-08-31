@@ -10,6 +10,15 @@ services:
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  test-db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: food-del
+      POSTGRES_USER: user
+      POSTGRES_DB: food-db
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/test-data.sql:/docker-entrypoint-initdb.d/test-data.sql
   app:
     build:
       context: .

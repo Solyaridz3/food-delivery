@@ -5,7 +5,7 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "up-test": "docker-compose down && docker-compose up db test --build",
+        "up-test": "docker-compose down && docker-compose up test-db test --build",
         "up-app": "docker-compose up db app --build",
         "start": "node index.js --env-file=.env",
         "dev": "nodemon index.js",
