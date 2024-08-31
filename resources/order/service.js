@@ -66,7 +66,7 @@ class OrderService {
                 deliveryTime,
             ]);
 
-            const orderId = queryResult.rows[0].order_id;
+            const orderId = queryResult.rows[0].id;
             const orderItemsPromises = items.map((item) =>
                 pool.query(queries.insertOrderItems, [
                     orderId,

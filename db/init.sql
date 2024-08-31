@@ -23,12 +23,13 @@ CREATE TABLE IF NOT EXISTS items (
 );
 
 CREATE TABLE IF NOT EXISTS orders (
-    order_id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     driver_id INT NOT NULL,
     order_total DECIMAL(10,2) NOT NULL,
     delivery_status VARCHAR(20) DEFAULT 'pending', 
-    delivery_time VARCHAR(10) NOT NULL, FOREIGN KEY (user_id) REFERENCES users(id), 
+    delivery_time VARCHAR(10) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id), 
     FOREIGN KEY (driver_id) REFERENCES drivers(id)
 );
 
@@ -38,6 +39,6 @@ CREATE TABLE IF NOT EXISTS order_items (
     item_id INT NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
     item_price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id), 
+    FOREIGN KEY (order_id) REFERENCES orders(id), 
     FOREIGN KEY (item_id) REFERENCES items(item_id)
 );
