@@ -25,7 +25,6 @@ jobs:
               run: docker compose build
 
             - name: Run Tests E2E
-              run: docker compose up --abort-on-container-exit test test-db
               env:
                   BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
                   BUCKET_LOCATION: ${{ secrets.BUCKET_LOCATION }}
@@ -38,3 +37,4 @@ jobs:
                   DB_USER: ${{ secrets.DB_USER }}
                   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
                   DB_DATABASE: ${{ secrets.DB_DATABASE }}
+              run: docker compose up --abort-on-container-exit test test-db

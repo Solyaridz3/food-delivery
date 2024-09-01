@@ -24,6 +24,13 @@ services:
       context: .
       dockerfile: Dockerfile
     image: food-del-api
+    environment:
+      - DB_TEST_HOST=${DB_TEST_HOST}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
     ports:
       - 13000:3000
 
@@ -32,13 +39,5 @@ services:
       context: .
       dockerfile: Dockerfile.test
     image: food-del-api-test
-    environment:
-      - SECRET_KEY_FILE: /run/secrets/secret_key
     ports:
       - 13001:3000
-    secrets:
-      - secret_key
-
-secrets:
-  secret_key:
-    environment: "BUCKET_NAME"
