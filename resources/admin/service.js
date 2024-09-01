@@ -24,6 +24,7 @@ class AdminService {
     };
 
     deleteUser = async (userId) => {
+        await pool.query(queries.deleteUserRelatedDriver, [userId]);
         await pool.query(queries.deleteUser, [userId]);
     };
 

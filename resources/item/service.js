@@ -4,17 +4,20 @@ import queries from "./queries.js";
 class ItemService {
     getAll = async () => {
         const data = await pool.query(queries.getAll);
-        return data.rows;
+        const items = data.rows;
+        return items;
     };
 
-    getOne = async (id) => {
-        const data = await pool.query(queries.getById, [id]);
-        return data;
+    getItem = async (itemId) => {
+        const data = await pool.query(queries.getById, [itemId]);
+        const item = data.rows[0];
+        return item;
     };
 
-    getList = async (itemsIds) => {
-        const queryResult = await pool.query(queries.getList, [itemsIds]);
-        return queryResult.rows;
+    getSelection = async (itemsIds) => {
+        const queryResult = await pool.query(queries.getSelection, [itemsIds]);
+        const items = queryResult.rows;
+        return items;
     };
 }
 
