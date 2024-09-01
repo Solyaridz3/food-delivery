@@ -36,6 +36,7 @@ services:
     ports:
       - 13001:3000
     environment:
+      DB_TEST_HOST: ${DB_TEST_HOST}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
       DB_USER: ${DB_USER}
