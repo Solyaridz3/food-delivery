@@ -1,7 +1,4 @@
 import pg from "pg";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const { Pool } = pg;
 
@@ -16,7 +13,7 @@ const pool = new Pool({
     database: process.env.DB_DATABASE,
 });
 
-const connectionData = {
+const data = {
     host:
         process.env.TEST === "true"
             ? process.env.DB_TEST_HOST
@@ -25,9 +22,8 @@ const connectionData = {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
-}
-
-console.log(connectionData);
+};
+console.log(data);
 
 export const testConnection = async () => {
     try {
