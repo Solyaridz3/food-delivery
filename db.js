@@ -27,6 +27,8 @@ const connectionData = {
     database: process.env.DB_DATABASE,
 }
 
+console.log(connectionData);
+
 export const testConnection = async () => {
     try {
         const client = await pool.connect();
