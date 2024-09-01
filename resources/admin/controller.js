@@ -20,10 +20,10 @@ class AdminController {
     initializeRoutes() {
         // Users
         this.router.get(`${this.path}/users`, isAdmin, this.getAllUsers);
-        this.router.delete(`${this.path}/users/:id`, isAdmin, this.deleteUser);
+        this.router.delete(`${this.path}/users/:userId`, isAdmin, this.deleteUser);
 
         // Items
-        this.router.delete(`${this.path}/items/:id`, isAdmin, this.deleteItem);
+        this.router.delete(`${this.path}/items/:itemId`, isAdmin, this.deleteItem);
         this.router.post(
             `${this.path}/items`,
             [isAdmin, upload.single("image")],
@@ -60,10 +60,10 @@ class AdminController {
 
     deleteUser = async (req, res, next) => {
         try {
-            const { id } = req.params;
-            await this.#adminService.deleteUser(id);
+            const userId = req.params.userId;
+            await this.#adminService.deleteUser(userId);
             res.status(200).json({
-                message: `User with ID ${id} has been deleted successfully.`,
+                message: `User with ID ${userId} has been deleted successfully.`,
             });
         } catch (err) {
             next(new HttpException(404, err.message));
@@ -89,7 +89,7 @@ class AdminController {
 
     deleteItem = async (req, res, next) => {
         try {
-            const itemId = req.params.id;
+            const itemId = req.params.itemId;
             await this.#adminService.deleteItem(itemId);
             res.sendStatus(204);
         } catch (err) {

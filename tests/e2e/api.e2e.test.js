@@ -15,8 +15,10 @@ const controllers = [
 ];
 
 const app = new App(controllers, 3000).express;
+
 let userToken;
 let adminToken;
+
 const newUsers = [
     {
         name: "John",

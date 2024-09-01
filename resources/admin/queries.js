@@ -2,7 +2,9 @@
 const getAllOrders = "SELECT * FROM orders";
 
 // Users
-const deleteUser = "DELETE from users WHERE id = $1";
+
+const deleteUserRelatedDriver = "DELETE FROM drivers where user_id = $1";
+const deleteUser = "DELETE FROM users WHERE id = $1";
 
 const getAllUsers = "SELECT id, name, email, phone, user_role FROM users";
 
@@ -22,4 +24,5 @@ export default {
     createItem,
     getAllDrivers,
     deleteItem,
+    deleteUserRelatedDriver
 };

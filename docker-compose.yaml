@@ -24,6 +24,8 @@ services:
       context: .
       dockerfile: Dockerfile
     image: food-del-api
+    environment:
+      TEST: false
     ports:
       - 13000:3000
 
@@ -34,3 +36,5 @@ services:
     image: food-del-api-test
     ports:
       - 13001:3000
+    environment:
+      TEST: true

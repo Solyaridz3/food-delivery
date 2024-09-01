@@ -1,28 +1,35 @@
 name: CI Pipeline
 
 on:
-  push:
-    branches:
-      - fixes
-  pull_request:
-    branches:
-      - fixes
+    push:
+        branches:
+            - fixes
+    pull_request:
+        branches:
+            - fixes
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+    build-and-test:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
 
-      - name: Build Docker images
-        run: docker compose build
+            - name: Build Docker images
+              run: docker compose build
 
-      - name: Run Tests
-        run: docker compose up --abort-on-container-exit test test-db
+            - name: Run Tests E2E
+              run: docker compose up --abort-on-container-exit test test-db
+              env:
+                  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+                  BUCKET_LOCATION: ${{ secrets.BUCKET_LOCATION }}
+                  S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+                  S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+                  GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+                  

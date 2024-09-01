@@ -9,7 +9,7 @@
         "up-app": "docker-compose up db app --build",
         "start": "node index.js --env-file=.env",
         "dev": "nodemon index.js",
-        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles"
+        "test": "node --env-file=.env --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles"
     },
     "keywords": [],
     "author": "",
