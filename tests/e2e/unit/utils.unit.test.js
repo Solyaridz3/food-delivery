@@ -1,6 +1,6 @@
 import getRoadInfo from "../../../utils/location.js";
 import { S3Client } from "@aws-sdk/client-s3";
-import createS3Client from "./createS3Client"; // Adjust the import path as needed
+import createS3Client from "./createS3Client.js"; // Adjust the import path as needed
 
 jest.mock("@aws-sdk/client-s3"); // Mock the S3Client class
 
