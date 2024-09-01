@@ -44,5 +44,13 @@ services:
       context: .
       dockerfile: Dockerfile.test
     image: food-del-api-test
+    environment:
+      - SECRET_KEY_FILE: /run/secrets/secret_key
     ports:
       - 13001:3000
+    secrets:
+      - secret_key
+      
+secrets:
+  secret_key:
+    environment: "BUCKET_NAME"
