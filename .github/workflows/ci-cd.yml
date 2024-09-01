@@ -26,12 +26,14 @@ jobs:
             - name: Check DB_HOST
               run: echo ${{ vars.DB_HOST }}
 
+            - name: Set environment variables
+              run: |
+                  echo "DB_HOST=localhost" >> $GITHUB_ENV
+                  echo "DB_TEST_HOST=test-db" >> $GITHUB_ENV
+                  echo "DB_PORT=5432" >> $GITHUB_ENV
+                  echo "DB_USER=user" >> $GITHUB_ENV
+                  echo "DB_PASSWORD=food-del" >> $GITHUB_ENV
+                  echo "DB_DATABASE=food-db" >> $GITHUB_ENV
+
             - name: Run Tests E2E
-              env:
-                  DB_TEST_HOST: ${{ vars.DB_TEST_HOST }}
-                  DB_HOST: ${{ vars.DB_HOST }}
-                  DB_PORT: ${{ vars.DB_PORT }}
-                  DB_USER: ${{ vars.DB_USER }}
-                  DB_PASSWORD: ${{ vars.DB_PASSWORD }}
-                  DB_DATABASE: ${{ vars.DB_DATABASE }}
               run: docker compose up --abort-on-container-exit test test-db
