@@ -13,17 +13,6 @@ const pool = new Pool({
     database: process.env.DB_DATABASE,
 });
 
-const data = {
-    host:
-        process.env.TEST === "true"
-            ? process.env.DB_TEST_HOST
-            : process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-};
-console.log(data);
 
 export const testConnection = async () => {
     try {

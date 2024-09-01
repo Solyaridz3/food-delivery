@@ -27,40 +27,51 @@ class AdminService {
         await pool.query(queries.deleteUserRelatedDriver, [userId]);
         await pool.query(queries.deleteUser, [userId]);
     };
-
     // Items
 
-    createItem = async (name, price, preparation_time, image) => {
-        const uniqueImageName = (bytes = 32) =>
-            crypto.randomBytes(bytes).toString("hex");
+    getImageUrl = async () => {};
 
-        const imageName = uniqueImageName();
-        const params = {
+    uniqueImageName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex");
+
+    putImageToS3 = async (image, imageKey) => {
+        const putObjectParams = {
             Bucket: process.env.BUCKET_NAME,
-            Key: imageName,
+            Key: imageKey,
             Body: image.buffer,
             ContentType: image.mimetype,
         };
 
-        const command = new PutObjectCommand(params);
+        const putCommand = new PutObjectCommand(putObjectParams);
 
-        await this.s3.send(command);
+        await this.s3.send(putCommand);
+    };
 
+    createImageUrl = async (imageKey) => {
         const getObjectParams = {
             Bucket: process.env.BUCKET_NAME,
-            Key: imageName,
+            Key: imageKey,
         };
         const getCommand = new GetObjectCommand(getObjectParams);
 
-        const image_url = await getSignedUrl(this.s3, getCommand, {
+        const imageUrl = await getSignedUrl(this.s3, getCommand, {
             expiresIn: 3600,
         });
+
+        return imageUrl;
+    };
+
+    createItem = async (name, price, preparationTime, image) => {
+        const imageKey = this.uniqueImageName();
+
+        await this.putImageToS3(image, imageKey);
+
+        const imageUrl = await this.createImageUrl(imageKey);
 
         const item = await pool.query(queries.createItem, [
             name,
             price,
-            preparation_time,
-            image_url,
+            preparationTime,
+            imageUrl,
         ]);
 
         return item.rows;

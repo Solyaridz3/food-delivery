@@ -11,7 +11,7 @@ const getUserOrders = "SELECT * FROM orders WHERE user_id = $1";
 const setDelivered = "UPDATE orders SET delivery_status = $1 WHERE id = $2";
 
 const getItemsData =
-    "SELECT item_id, price, preparation_time FROM items WHERE id = ANY($1::int[])";
+    "SELECT id, price, preparation_time FROM items WHERE id = ANY($1::int[])";
 
 const getOrderItems =
     "SELECT item_id, quantity, item_price from order_items WHERE order_id = $1";
