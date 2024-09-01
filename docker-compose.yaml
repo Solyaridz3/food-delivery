@@ -25,7 +25,17 @@ services:
       dockerfile: Dockerfile
     image: food-del-api
     environment:
-      TEST: false
+      BUCKET_NAME: ${BUCKET_NAME}
+      BUCKET_LOCATION: ${BUCKET_LOCATION}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      DB_TEST_HOST: ${DB_TEST_HOST}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
     ports:
       - 13000:3000
 
@@ -36,5 +46,3 @@ services:
     image: food-del-api-test
     ports:
       - 13001:3000
-    environment:
-      TEST: true
