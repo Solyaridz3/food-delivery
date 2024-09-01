@@ -7,9 +7,9 @@
     "scripts": {
         "up-test": "docker-compose down && docker-compose up test-db test --build",
         "up-app": "docker-compose up db app --build",
-        "start": "node index.js --env-file=.env",
+        "start": "node index.js",
         "dev": "nodemon index.js",
-        "test": "node --env-file=.env --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles"
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles"
     },
     "keywords": [],
     "author": "",
