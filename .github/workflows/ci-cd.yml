@@ -24,7 +24,7 @@ jobs:
             - name: Build Docker images
               run: docker compose build
             - name: Check secret
-              run: echo "${{ secrets.DB_HOST }}"
+              run: echo ${{ secrets.DB_HOST }}
 
             - name: Run Tests E2E
               env:
