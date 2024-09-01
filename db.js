@@ -27,10 +27,6 @@ const connectionData = {
     database: process.env.DB_DATABASE,
 }
 
-console.log(connectionData);
-console.log(process.env.BUCKET_NAME);
-console.log(process.env.SECRET_KEY);
-
 export const testConnection = async () => {
     try {
         const client = await pool.connect();
