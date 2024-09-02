@@ -21,7 +21,7 @@ jobs:
               with:
                   node-version: 20
             - name: Run Linting
-              run: npm run lint
+              run: docker compose run --rm lint
 
             - name: Build Docker images
               run: docker compose build

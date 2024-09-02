@@ -42,6 +42,11 @@ services:
       BUCKET_NAME: ${BUCKET_NAME}
       BUCKET_LOCATION: ${BUCKET_LOCATION}
       TEST: false
+  
+  lint:
+    build:
+      context: .
+      dockerfile: Dockerfile.lint
 
   test:
     build:
