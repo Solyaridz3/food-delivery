@@ -20,6 +20,8 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 20
+            - name: Run Linting
+              run: npm run lint
 
             - name: Build Docker images
               run: docker compose build

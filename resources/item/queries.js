@@ -1,4 +1,3 @@
-
 const getAll = "SELECT * FROM items";
 
 const getSelection = "SELECT * FROM items WHERE id = ANY($1::int[])";

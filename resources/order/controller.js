@@ -15,14 +15,26 @@ class OrderController {
   }
 
   initializeRoutes() {
-    this.router.get(`${this.path}/details/:orderId`, authenticated, this.getOrder);
+    this.router.get(
+      `${this.path}/details/:orderId`,
+      authenticated,
+      this.getOrder,
+    );
     this.router.post(
       `${this.path}/`,
       [authenticated, validationMiddleware(validate.makeOrder)],
-      this.makeOrder
+      this.makeOrder,
     );
-    this.router.get(`${this.path}/user-orders`, authenticated, this.getUserOrders);
-    this.router.get(`${this.path}/order-items/:orderId`, authenticated, this.getOrderItems);
+    this.router.get(
+      `${this.path}/user-orders`,
+      authenticated,
+      this.getUserOrders,
+    );
+    this.router.get(
+      `${this.path}/order-items/:orderId`,
+      authenticated,
+      this.getOrderItems,
+    );
   }
 
   getOrder = async (req, res, next) => {

@@ -8,11 +8,11 @@ import AdminController from "./resources/admin/controller.js";
 const PORT = 3000;
 
 const controllers = [
-    new UserController(),
-    new ItemController(),
-    new OrderController(),
-    new DriverController(),
-    new AdminController(),
+  new UserController(),
+  new ItemController(),
+  new OrderController(),
+  new DriverController(),
+  new AdminController(),
 ];
 
 const app = new App(controllers, PORT);
