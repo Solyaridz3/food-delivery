@@ -6,88 +6,88 @@ import s3 from "../../utils/s3.js";
 import crypto from "crypto";
 
 class AdminService {
-    constructor() {
-        this.s3 = s3;
-    }
+  constructor() {
+    this.s3 = s3;
+  }
 
-    // Orders
+  // Orders
 
-    getAllOrders = async () => {
-        const queryResult = await pool.query(queries.getAllOrders);
-        return queryResult.rows;
+  getAllOrders = async () => {
+    const queryResult = await pool.query(queries.getAllOrders);
+    return queryResult.rows;
+  };
+
+  // Users
+  getAllUsers = async () => {
+    const queryResult = await pool.query(queries.getAllUsers);
+    return queryResult.rows;
+  };
+
+  deleteUser = async (userId) => {
+    await pool.query(queries.deleteUserRelatedDriver, [userId]);
+    await pool.query(queries.deleteUser, [userId]);
+  };
+  // Items
+
+  getImageUrl = async () => {};
+
+  uniqueImageName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex");
+
+  putImageToS3 = async (image, imageKey) => {
+    const putObjectParams = {
+      Bucket: process.env.BUCKET_NAME,
+      Key: imageKey,
+      Body: image.buffer,
+      ContentType: image.mimetype,
     };
 
-    // Users
-    getAllUsers = async () => {
-        const queryResult = await pool.query(queries.getAllUsers);
-        return queryResult.rows;
+    const putCommand = new PutObjectCommand(putObjectParams);
+
+    await this.s3.send(putCommand);
+  };
+
+  createImageUrl = async (imageKey) => {
+    const getObjectParams = {
+      Bucket: process.env.BUCKET_NAME,
+      Key: imageKey,
     };
+    const getCommand = new GetObjectCommand(getObjectParams);
 
-    deleteUser = async (userId) => {
-        await pool.query(queries.deleteUserRelatedDriver, [userId]);
-        await pool.query(queries.deleteUser, [userId]);
-    };
-    // Items
+    const imageUrl = await getSignedUrl(this.s3, getCommand, {
+      expiresIn: 3600,
+    });
 
-    getImageUrl = async () => {};
+    return imageUrl;
+  };
 
-    uniqueImageName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex");
+  createItem = async (name, price, preparationTime, image) => {
+    const imageKey = this.uniqueImageName();
 
-    putImageToS3 = async (image, imageKey) => {
-        const putObjectParams = {
-            Bucket: process.env.BUCKET_NAME,
-            Key: imageKey,
-            Body: image.buffer,
-            ContentType: image.mimetype,
-        };
+    await this.putImageToS3(image, imageKey);
 
-        const putCommand = new PutObjectCommand(putObjectParams);
+    const imageUrl = await this.createImageUrl(imageKey);
 
-        await this.s3.send(putCommand);
-    };
+    const item = await pool.query(queries.createItem, [
+      name,
+      price,
+      preparationTime,
+      imageUrl,
+    ]);
 
-    createImageUrl = async (imageKey) => {
-        const getObjectParams = {
-            Bucket: process.env.BUCKET_NAME,
-            Key: imageKey,
-        };
-        const getCommand = new GetObjectCommand(getObjectParams);
+    return item.rows;
+  };
 
-        const imageUrl = await getSignedUrl(this.s3, getCommand, {
-            expiresIn: 3600,
-        });
+  deleteItem = async (itemId) => {
+    await pool.query(queries.deleteItem, [itemId]);
+  };
 
-        return imageUrl;
-    };
+  // Drivers
 
-    createItem = async (name, price, preparationTime, image) => {
-        const imageKey = this.uniqueImageName();
-
-        await this.putImageToS3(image, imageKey);
-
-        const imageUrl = await this.createImageUrl(imageKey);
-
-        const item = await pool.query(queries.createItem, [
-            name,
-            price,
-            preparationTime,
-            imageUrl,
-        ]);
-
-        return item.rows;
-    };
-
-    deleteItem = async (itemId) => {
-        await pool.query(queries.deleteItem, [itemId]);
-    };
-
-    // Drivers
-
-    getAllDrivers = async () => {
-        const queryResult = await pool.query(queries.getAllDrivers);
-        const drivers = queryResult.rows;
-        return drivers;
-    };
+  getAllDrivers = async () => {
+    const queryResult = await pool.query(queries.getAllDrivers);
+    const drivers = queryResult.rows;
+    return drivers;
+  };
 }
 
 export default AdminService;

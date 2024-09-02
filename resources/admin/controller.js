@@ -9,104 +9,104 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 class AdminController {
-    path = "/admin";
-    router = new Router();
-    #adminService = new AdminService();
+  path = "/admin";
+  router = new Router();
+  #adminService = new AdminService();
 
-    constructor() {
-        this.initializeRoutes();
-    }
+  constructor() {
+    this.initializeRoutes();
+  }
 
-    initializeRoutes() {
-        // Users
-        this.router.get(`${this.path}/users`, isAdmin, this.getAllUsers);
-        this.router.delete(`${this.path}/users/:userId`, isAdmin, this.deleteUser);
-
-        // Items
-        this.router.delete(`${this.path}/items/:itemId`, isAdmin, this.deleteItem);
-        this.router.post(
-            `${this.path}/items`,
-            [isAdmin, upload.single("image")],
-            this.createItem
-        );
-        // Orders
-
-        this.router.get(`${this.path}/orders`, isAdmin, this.getAllOrders);
-
-        // Drivers
-        this.router.get(`${this.path}/drivers`, isAdmin, this.getAllDrivers);
-    }
-    // Orders
-
-    getAllOrders = async (req, res, next) => {
-        try {
-            const orders = await this.#adminService.getAllOrders();
-            res.status(200).json({ orders });
-        } catch (err) {
-            throw new HttpException(403, err.message);
-        }
-    };
-
+  initializeRoutes() {
     // Users
-
-    getAllUsers = async (req, res, next) => {
-        try {
-            const users = await this.#adminService.getAllUsers();
-            res.status(200).json({ users });
-        } catch (err) {
-            next(new HttpException(400, err.message));
-        }
-    };
-
-    deleteUser = async (req, res, next) => {
-        try {
-            const userId = req.params.userId;
-            await this.#adminService.deleteUser(userId);
-            res.status(200).json({
-                message: `User with ID ${userId} has been deleted successfully.`,
-            });
-        } catch (err) {
-            next(new HttpException(404, err.message));
-        }
-    };
+    this.router.get(`${this.path}/users`, isAdmin, this.getAllUsers);
+    this.router.delete(`${this.path}/users/:userId`, isAdmin, this.deleteUser);
 
     // Items
-    createItem = async (req, res, next) => {
-        try {
-            const image = req.file;
-            const { name, price, preparation_time } = req.body;
-            const item = await this.#adminService.createItem(
-                name,
-                price,
-                preparation_time,
-                image
-            );
-            return res.status(201).json({ item });
-        } catch (err) {
-            next(new HttpException(400, err.message));
-        }
-    };
+    this.router.delete(`${this.path}/items/:itemId`, isAdmin, this.deleteItem);
+    this.router.post(
+      `${this.path}/items`,
+      [isAdmin, upload.single("image")],
+      this.createItem,
+    );
+    // Orders
 
-    deleteItem = async (req, res, next) => {
-        try {
-            const itemId = req.params.itemId;
-            await this.#adminService.deleteItem(itemId);
-            res.sendStatus(204);
-        } catch (err) {
-            next(new HttpException(response.status | 404, err.message));
-        }
-    };
+    this.router.get(`${this.path}/orders`, isAdmin, this.getAllOrders);
 
     // Drivers
+    this.router.get(`${this.path}/drivers`, isAdmin, this.getAllDrivers);
+  }
+  // Orders
 
-    getAllDrivers = async (req, res, next) => {
-        try {
-            const drivers = await this.#adminService.getAllDrivers();
-            res.status(200).json({ drivers });
-        } catch (err) {
-            next(new HttpException(400, err.message));
-        }
-    };
+  getAllOrders = async (req, res, next) => {
+    try {
+      const orders = await this.#adminService.getAllOrders();
+      res.status(200).json({ orders });
+    } catch (err) {
+      throw new HttpException(403, err.message);
+    }
+  };
+
+  // Users
+
+  getAllUsers = async (req, res, next) => {
+    try {
+      const users = await this.#adminService.getAllUsers();
+      res.status(200).json({ users });
+    } catch (err) {
+      next(new HttpException(400, err.message));
+    }
+  };
+
+  deleteUser = async (req, res, next) => {
+    try {
+      const userId = req.params.userId;
+      await this.#adminService.deleteUser(userId);
+      res.status(200).json({
+        message: `User with ID ${userId} has been deleted successfully.`,
+      });
+    } catch (err) {
+      next(new HttpException(404, err.message));
+    }
+  };
+
+  // Items
+  createItem = async (req, res, next) => {
+    try {
+      const image = req.file;
+      const { name, price, preparation_time } = req.body;
+      const item = await this.#adminService.createItem(
+        name,
+        price,
+        preparation_time,
+        image,
+      );
+      return res.status(201).json({ item });
+    } catch (err) {
+      next(new HttpException(400, err.message));
+    }
+  };
+
+  deleteItem = async (req, res, next) => {
+    try {
+      const itemId = req.params.itemId;
+      await this.#adminService.deleteItem(itemId);
+      res.sendStatus(204);
+    } catch (err) {
+      next(new HttpException(response.status | 404, err.message));
+    }
+  };
+
+  // Drivers
+
+  getAllDrivers = async (req, res, next) => {
+    try {
+      const drivers = await this.#adminService.getAllDrivers();
+      res.status(200).json({ drivers });
+    } catch (err) {
+      next(new HttpException(400, err.message));
+    }
+  };
 }
 
 export default AdminController;

@@ -4,110 +4,110 @@ import token from "../../utils/token.js";
 import queries from "./queries.js";
 
 class UserService {
-    register = async (name, email, phone, password, userRole) => {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const queryResult = await pool.query(queries.register, [
-            name,
-            email,
-            phone,
-            hashedPassword,
-            userRole,
-        ]);
+  register = async (name, email, phone, password, userRole) => {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const queryResult = await pool.query(queries.register, [
+      name,
+      email,
+      phone,
+      hashedPassword,
+      userRole,
+    ]);
 
-        const user = queryResult.rows[0];
-        const userId = user.id;
+    const user = queryResult.rows[0];
+    const userId = user.id;
 
-        if (userId === 1) {
-            await pool.query(queries.registerAsAdmin, [userId]);
-            userRole = "admin";
-        }
-        
-        const accessToken = token.createToken({ id: userId, user_role: userRole });
-        return accessToken;
-    };
+    if (userId === 1) {
+      await pool.query(queries.registerAsAdmin, [userId]);
+      userRole = "admin";
+    }
 
-    login = async (email, password) => {
-        const result = await pool.query(queries.getByEmail, [email]);
+    const accessToken = token.createToken({
+      id: userId,
+      user_role: userRole,
+    });
+    return accessToken;
+  };
 
-        if (result.rows.length === 0) {
-            throw new Error("User not found");
-        }
+  login = async (email, password) => {
+    const result = await pool.query(queries.getByEmail, [email]);
 
-        const user = result.rows[0];
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (result.rows.length === 0) {
+      throw new Error("User not found");
+    }
 
-        if (!isPasswordValid) {
-            throw new Error("Invalid password");
-        }
+    const user = result.rows[0];
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-        const accessToken = token.createToken(user);
+    if (!isPasswordValid) {
+      throw new Error("Invalid password");
+    }
 
-        return accessToken;
-    };
+    const accessToken = token.createToken(user);
 
-    update = async (data) => {
-        try {
-            const queryResult = await pool.query(queries.getById, [data.id]);
+    return accessToken;
+  };
 
-            if (queryResult.rows.length === 0) {
-                throw new Error("Error occurred: Unable to find your profile");
-            }
+  update = async (data) => {
+    try {
+      const queryResult = await pool.query(queries.getById, [data.id]);
 
-            const user = queryResult.rows[0];
+      if (queryResult.rows.length === 0) {
+        throw new Error("Error occurred: Unable to find your profile");
+      }
 
-            // Check if the current password is correct
-            const isPasswordValid = await bcrypt.compare(
-                data.password,
-                user.password
-            );
-            if (!isPasswordValid) {
-                throw new Error("You entered an invalid password");
-            }
+      const user = queryResult.rows[0];
 
-            const updatedFields = {};
+      // Check if the current password is correct
+      const isPasswordValid = await bcrypt.compare(
+        data.password,
+        user.password,
+      );
+      if (!isPasswordValid) {
+        throw new Error("You entered an invalid password");
+      }
 
-            if (data.new_password) {
-                updatedFields.password = await bcrypt.hash(
-                    data.new_password,
-                    10
-                );
-            }
+      const updatedFields = {};
 
-            if (data.email) {
-                updatedFields.email = data.email;
-            }
+      if (data.new_password) {
+        updatedFields.password = await bcrypt.hash(data.new_password, 10);
+      }
 
-            if (data.name) {
-                updatedFields.name = data.name;
-            }
+      if (data.email) {
+        updatedFields.email = data.email;
+      }
 
-            if (data.phone) {
-                updatedFields.phone = data.phone;
-            }
+      if (data.name) {
+        updatedFields.name = data.name;
+      }
 
-            if (Object.keys(updatedFields).length === 0) {
-                throw new Error("No fields provided for update.");
-            }
+      if (data.phone) {
+        updatedFields.phone = data.phone;
+      }
 
-            const newUser = { ...user, ...updatedFields };
+      if (Object.keys(updatedFields).length === 0) {
+        throw new Error("No fields provided for update.");
+      }
 
-            await pool.query(queries.updateUser, [
-                newUser.name,
-                newUser.email,
-                newUser.phone,
-                newUser.password,
-                newUser.id,
-            ]);
+      const newUser = { ...user, ...updatedFields };
 
-            const { password, ...newUserData } = newUser;
-            return newUserData;
-        } catch (error) {
-            throw new Error(
-                error.message ||
-                    "Unable to update user, please check the provided information."
-            );
-        }
-    };
+      await pool.query(queries.updateUser, [
+        newUser.name,
+        newUser.email,
+        newUser.phone,
+        newUser.password,
+        newUser.id,
+      ]);
+
+      const { password, ...newUserData } = newUser;
+      return newUserData;
+    } catch (error) {
+      throw new Error(
+        error.message ||
+          "Unable to update user, please check the provided information.",
+      );
+    }
+  };
 }
 
 export default UserService;
