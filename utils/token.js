@@ -58,4 +58,4 @@ function verifyToken(token) {
   return payload;
 }
 
-export default { createToken, verifyToken };
+export default { createToken, verifyToken, base64UrlEncode };

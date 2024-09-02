@@ -5,7 +5,7 @@ import ItemService from "./service.js";
 class ItemController {
   path = "/items";
   router = new Router();
-  #itemService = new ItemService();
+  _itemService = new ItemService();
   constructor() {
     this.initializeRoutes();
   }
@@ -18,7 +18,7 @@ class ItemController {
 
   getAll = async (req, res, next) => {
     try {
-      const items = await this.#itemService.getAll();
+      const items = await this._itemService.getAll();
       res.status(200).json({ items });
     } catch (err) {
       next(new HttpException(400, err.message));
@@ -28,7 +28,7 @@ class ItemController {
   getItem = async (req, res, next) => {
     try {
       const itemId = req.params.itemId;
-      const item = await this.#itemService.getItem(itemId);
+      const item = await this._itemService.getItem(itemId);
       res.status(200).json({ item });
     } catch (err) {
       next(new HttpException(404, err.message));
@@ -38,7 +38,7 @@ class ItemController {
   getSelection = async (req, res, next) => {
     try {
       const itemsIds = req.body.items_ids;
-      const items = await this.#itemService.getSelection(itemsIds);
+      const items = await this._itemService.getSelection(itemsIds);
       res.status(200).json({ items });
     } catch (err) {
       next(new HttpException(400, err.message));

@@ -6,7 +6,7 @@ import { authMiddleware as authenticated } from "../../middleware/auth.middlewar
 class DriverController {
   path = "/drivers";
   router = new Router();
-  #driverService = new DriverService();
+  _driverService = new DriverService();
 
   constructor() {
     this.initializeRoutes();
@@ -30,7 +30,7 @@ class DriverController {
   changeStatus = (status) => async (req, res, next) => {
     try {
       const userId = req.user;
-      const newStatus = await this.#driverService.changeStatus(status, userId);
+      const newStatus = await this._driverService.changeStatus(status, userId);
       res.status(200).json(newStatus);
     } catch (err) {
       next(new HttpException(400, err.message));
@@ -46,7 +46,7 @@ class DriverController {
   becomeDriver = async (req, res, next) => {
     try {
       const userId = req.user;
-      const driver = await this.#driverService.registerDriver(userId);
+      const driver = await this._driverService.registerDriver(userId);
       res.status(201).json({ driver });
     } catch (err) {
       next(new HttpException(400, err.message));
