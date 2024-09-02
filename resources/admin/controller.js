@@ -11,7 +11,7 @@ const upload = multer({ storage: storage });
 class AdminController {
   path = "/admin";
   router = new Router();
-  #adminService = new AdminService();
+  _adminService = new AdminService();
 
   constructor() {
     this.initializeRoutes();
@@ -40,7 +40,7 @@ class AdminController {
 
   getAllOrders = async (req, res, next) => {
     try {
-      const orders = await this.#adminService.getAllOrders();
+      const orders = await this._adminService.getAllOrders();
       res.status(200).json({ orders });
     } catch (err) {
       throw new HttpException(403, err.message);
@@ -51,7 +51,7 @@ class AdminController {
 
   getAllUsers = async (req, res, next) => {
     try {
-      const users = await this.#adminService.getAllUsers();
+      const users = await this._adminService.getAllUsers();
       res.status(200).json({ users });
     } catch (err) {
       next(new HttpException(400, err.message));
@@ -61,7 +61,7 @@ class AdminController {
   deleteUser = async (req, res, next) => {
     try {
       const userId = req.params.userId;
-      await this.#adminService.deleteUser(userId);
+      await this._adminService.deleteUser(userId);
       res.status(200).json({
         message: `User with ID ${userId} has been deleted successfully.`,
       });
@@ -75,7 +75,7 @@ class AdminController {
     try {
       const image = req.file;
       const { name, price, preparation_time } = req.body;
-      const item = await this.#adminService.createItem(
+      const item = await this._adminService.createItem(
         name,
         price,
         preparation_time,
@@ -90,7 +90,7 @@ class AdminController {
   deleteItem = async (req, res, next) => {
     try {
       const itemId = req.params.itemId;
-      await this.#adminService.deleteItem(itemId);
+      await this._adminService.deleteItem(itemId);
       res.sendStatus(204);
     } catch (err) {
       next(new HttpException(response.status | 404, err.message));
@@ -101,7 +101,7 @@ class AdminController {
 
   getAllDrivers = async (req, res, next) => {
     try {
-      const drivers = await this.#adminService.getAllDrivers();
+      const drivers = await this._adminService.getAllDrivers();
       res.status(200).json({ drivers });
     } catch (err) {
       next(new HttpException(400, err.message));

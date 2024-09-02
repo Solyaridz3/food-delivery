@@ -8,7 +8,7 @@ import validate from "./validation.js";
 class OrderController {
   path = "/orders";
   router = new Router();
-  #orderService = new OrderService();
+  _orderService = new OrderService();
 
   constructor() {
     this.initializeRoutes();
@@ -41,7 +41,7 @@ class OrderController {
     try {
       const userId = req.user;
       const orderId = req.params.orderId;
-      const order = await this.#orderService.getOrder(orderId, userId);
+      const order = await this._orderService.getOrder(orderId, userId);
       res.status(200).json(order);
     } catch (err) {
       next(new HttpException(404, err.message || "Order not found"));
@@ -51,7 +51,7 @@ class OrderController {
   getUserOrders = async (req, res, next) => {
     try {
       const userId = req.user;
-      const userOrders = await this.#orderService.getUserOrders(userId);
+      const userOrders = await this._orderService.getUserOrders(userId);
       res.status(200).json({ user_orders: userOrders });
     } catch (err) {
       next(new HttpException(404, err.message || "User orders not found"));
@@ -62,7 +62,7 @@ class OrderController {
     try {
       const userId = req.user;
       const { items, address } = req.body;
-      const orderId = await this.#orderService.create(userId, items, address);
+      const orderId = await this._orderService.create(userId, items, address);
       res.status(201).json({ order_id: orderId });
     } catch (err) {
       next(new HttpException(400, err.message || "Failed to create order"));
@@ -72,7 +72,7 @@ class OrderController {
   getOrderItems = async (req, res, next) => {
     try {
       const orderId = req.params.orderId;
-      const items = await this.#orderService.getOrderItems(orderId);
+      const items = await this._orderService.getOrderItems(orderId);
       res.status(200).json({ items });
     } catch (err) {
       next(new HttpException(404, err.message || "Order items not found"));
