@@ -5,8 +5,8 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "up-test": "docker-compose down && docker-compose up test-db test --build",
-        "up-app": "docker-compose up db app --build",
+        "up-test": "docker-compose down && docker-compose up test --build",
+        "up-app": "docker-compose up app --build",
         "start": "node index.js",
         "dev": "nodemon index.js",
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles"
