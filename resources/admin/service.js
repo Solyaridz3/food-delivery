@@ -2,12 +2,12 @@ import pool from "../../db.js";
 import queries from "./queries.js";
 import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import createS3Client from "../../utils/s3.js";
+import s3 from "../../utils/s3.js";
 import crypto from "crypto";
 
 class AdminService {
     constructor() {
-        this.s3 = createS3Client();
+        this.s3 = s3;
     }
 
     // Orders

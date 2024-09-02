@@ -98,7 +98,6 @@ describe("Items endpoints", () => {
 
     it("Should get single item", async () => {
         const res = await request(app).get("/api/v2/items/details/1");
-        console.log(res.body);
         const item = res.body.item;
         expect(res.statusCode).toEqual(200);
         expect(Object.keys(item).sort()).toEqual(keys.sort());

@@ -34,9 +34,6 @@ class DriverController {
     changeStatus = (status) => async (req, res, next) => {
         try {
             const userId = req.user;
-            if (user.role !== "driver") {
-                throw new Error("Your account is not registered as a driver");
-            }
             const newStatus = await this.#driverService.changeStatus(
                 status,
                 userId

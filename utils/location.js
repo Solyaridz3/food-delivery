@@ -20,10 +20,9 @@ const getRoadInfo = async (destination) => {
 
         const distanceKm = roadData.distance.value / 1000;
         const timeToDriveMinutes = Math.ceil(roadData.duration.value / 60);
-
         return {distanceKm, timeToDriveMinutes};
-    } catch (error) {
-        console.error(error.message);
+    } catch (err) {
+        throw new Error(err.message)
     }
 };
 

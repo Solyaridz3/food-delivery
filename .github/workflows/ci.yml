@@ -24,7 +24,7 @@ jobs:
             - name: Build Docker images
               run: docker compose build
 
-            - name: Run Tests E2E
+            - name: Run Tests
               env:
                   BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
                   BUCKET_LOCATION: ${{ secrets.BUCKET_LOCATION }}

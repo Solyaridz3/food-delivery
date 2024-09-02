@@ -1,55 +1,62 @@
+import fetchMock from "jest-fetch-mock";
 import getRoadInfo from "../../../utils/location.js";
-import { S3Client } from "@aws-sdk/client-s3";
-import createS3Client from "./createS3Client.js"; // Adjust the import path as needed
+import { jest } from "@jest/globals";
 
-jest.mock("@aws-sdk/client-s3"); // Mock the S3Client class
-
-describe("Google maps get distance info tests", () => {
-    it("should get distance", async () => {
-        const {distanceKm, timeToDriveMinutes} = await getRoadInfo("Velyka Zhytomyrska St, 25/2, Kyiv, 02000");
-        expect(distanceKm).toEqual(expect.any(Number));
-        expect(timeToDriveMinutes).toEqual(expect.any(Number));
-    });
+beforeEach(() => {
+    fetchMock.enableMocks();
 });
 
+afterEach(() => {
+    fetchMock.disableMocks();
+});
 
+test("should return road data for successful response", async () => {
+    const mockResponse = {
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+            status: "OK",
+            rows: [
+                {
+                    elements: [
+                        {
+                            distance: { value: 10000 },
+                            duration: { value: 3600 },
+                        },
+                    ],
+                },
+            ],
+        }),
+    };
 
-describe("createS3Client", () => {
-  const mockAccessKey = "mockAccessKey";
-  const mockSecretAccessKey = "mockSecretAccessKey";
-  const mockRegion = "mock-region";
+    fetchMock.mockResolvedValueOnce(mockResponse);
 
-  beforeEach(() => {
-    // Mock environment variables
-    process.env.S3_ACCESS_KEY = mockAccessKey;
-    process.env.S3_SECRET_ACCESS_KEY = mockSecretAccessKey;
-    process.env.BUCKET_LOCATION = mockRegion;
+    const roadInfo = await getRoadInfo("My Destination");
 
-    // Clear previous mocks and spies
-    jest.clearAllMocks();
-  });
+    expect(roadInfo).toEqual({ distanceKm: 10, timeToDriveMinutes: 60 });
+});
 
-  it("should create an S3Client instance with the correct credentials and region", () => {
-    // Call the function to create the S3 client
-    createS3Client();
+test("should throw error for non-OK response", async () => {
+    const mockResponse = {
+        ok: false,
+        status: 400,
+    };
 
-    // Check if S3Client was called with correct parameters
-    expect(S3Client).toHaveBeenCalledWith({
-      credentials: {
-        accessKeyId: mockAccessKey,
-        secretAccessKey: mockSecretAccessKey,
-      },
-      region: mockRegion,
-    });
-  });
+    fetchMock.mockResolvedValueOnce(mockResponse);
 
-  it("should return an instance of S3Client", () => {
-    // Mock S3Client instance
-    const mockS3ClientInstance = {};
-    S3Client.mockImplementation(() => mockS3ClientInstance);
+    await expect(getRoadInfo("My Destination")).rejects.toThrowError(
+        "Response status: 400"
+    );
+});
 
-    const s3Client = createS3Client();
+test("should throw error for invalid JSON response", async () => {
+    const mockResponse = {
+        ok: true,
+        json: jest.fn().mockRejectedValue(new Error("Invalid JSON")),
+    };
 
-    expect(s3Client).toBe(mockS3ClientInstance);
-  });
+    fetchMock.mockResolvedValueOnce(mockResponse);
+
+    await expect(getRoadInfo("My Destination")).rejects.toThrowError(
+        "Invalid JSON"
+    );
 });

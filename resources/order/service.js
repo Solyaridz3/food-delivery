@@ -96,7 +96,6 @@ class OrderService {
             const totalPrice = itemTotalPrice + deliveryCost;
             const totalTime = totalPreparationTime + timeToDriveMinutes;
             const deliveryTime = await this.calculateDeliveryTime(totalTime);
-
             // Step 4: Get available driver
             const driver = await this.getAvailableDriver();
 
