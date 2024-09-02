@@ -25,6 +25,8 @@ services:
       context: .
       dockerfile: Dockerfile
     image: food-del-api
+    depends_on:
+      - db
     ports:
       - 13000:3000
     environment:
@@ -48,6 +50,8 @@ services:
     image: food-del-api-test
     ports:
       - 13001:3000
+    depends_on:
+      - test-db
     environment:
       DB_TEST_HOST: ${DB_TEST_HOST}
       DB_HOST: ${DB_HOST}
