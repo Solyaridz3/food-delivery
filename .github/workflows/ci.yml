@@ -59,18 +59,4 @@ jobs:
           docker compose up --abort-on-container-exit e2e-test test-db
 
       - name: Run Unit Tests
-        env:
-          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
-          BUCKET_LOCATION: ${{ secrets.BUCKET_LOCATION }}
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-          DB_TEST_HOST: ${{ secrets.DB_TEST_HOST }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          RESTAURANT_ADDRESS: ${{ vars.RESTAURANT_ADDRESS }}
         run: docker compose up --abort-on-container-exit unit-test
