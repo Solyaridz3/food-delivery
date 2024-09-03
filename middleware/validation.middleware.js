@@ -1,3 +1,8 @@
+/**
+ * Middleware to validate request bodies using a Joi schema.
+ * @param {Object} schema - The Joi schema for validation.
+ * @returns {Function} - Middleware function.
+ */
 function validationMiddleware(schema) {
   return async (req, res, next) => {
     const validationOption = {
@@ -10,10 +15,7 @@ function validationMiddleware(schema) {
       req.body = value;
       next();
     } catch (error) {
-      const errors = [];
-      error.details.forEach((error) => {
-        errors.push(error.message);
-      });
+      const errors = error.details.map((err) => err.message);
       res.status(400).send({ errors });
     }
   };

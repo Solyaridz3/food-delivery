@@ -14,6 +14,7 @@ class OrderController {
     this.initializeRoutes();
   }
 
+  // Sets up the routes for order-related endpoints
   initializeRoutes() {
     this.router.get(
       `${this.path}/details/:orderId`,
@@ -37,6 +38,7 @@ class OrderController {
     );
   }
 
+  // Retrieves details of a specific order
   getOrder = async (req, res, next) => {
     try {
       const userId = req.user;
@@ -48,6 +50,7 @@ class OrderController {
     }
   };
 
+  // Retrieves all orders for a specific user
   getUserOrders = async (req, res, next) => {
     try {
       const userId = req.user;
@@ -58,6 +61,7 @@ class OrderController {
     }
   };
 
+  // Creates a new order
   makeOrder = async (req, res, next) => {
     try {
       const userId = req.user;
@@ -69,6 +73,7 @@ class OrderController {
     }
   };
 
+  // Retrieves items for a specific order
   getOrderItems = async (req, res, next) => {
     try {
       const orderId = req.params.orderId;
