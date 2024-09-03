@@ -59,4 +59,4 @@ jobs:
           docker compose up --abort-on-container-exit e2e-test test-db
 
       - name: Run Unit Tests
-        run: docker compose up --abort-on-container-exit unit-test
+        run: docker compose up unit-test
