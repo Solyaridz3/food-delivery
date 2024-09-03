@@ -5,13 +5,12 @@ import asyncTimeout from "../../utils/asyncTImeout.js"; // Utility to create asy
 import DriverService from "../driver/service.js";
 
 class OrderService {
-  // Private member for accessing driver-related operations
   _driverService = new DriverService();
 
   /**
-   * Calculates the estimated delivery time by adding the total preparation and delivery time to the current time.
-   * @param {number} totalTime - The total time required for preparation and delivery in minutes.
-   * @returns {string} - The estimated delivery time formatted in "HH:mm" for Kyiv timezone.
+   * Calculates the estimated delivery time by adding preparation and delivery time to the current time.
+   * @param {number} totalTime - The total time in minutes.
+   * @returns {string} - Estimated delivery time in "HH:mm" format.
    */
   calculateDeliveryTime = (totalTime) => {
     const date = new Date();
@@ -22,16 +21,14 @@ class OrderService {
       minute: "2-digit",
       hour12: false,
     };
-
-    const deliveryTime = date.toLocaleString([], options);
-    return deliveryTime;
+    return date.toLocaleString([], options);
   };
 
   /**
-   * Created in order to simulate drivers activity
    * Sets the status of an order to "delivered" after a specified delay.
-   * @param {number} orderId - The ID of the order to update.
-   * @param {number} minutes - The delay in minutes before setting the status.
+   * @param {number} orderId - The ID of the order.
+   * @param {number} minutes - Delay in minutes.
+   * @returns {Promise<void>} - A promise that resolves when the status is updated.
    */
   setDelivered = async (orderId, minutes) => {
     const ms = minutes * 60 * 1000;
@@ -40,9 +37,8 @@ class OrderService {
   };
 
   /**
-   * Retrieves the first available driver from the pool of drivers.
-   * Throws an error if no drivers are available.
-   * @returns {object} - The first available driver.
+   * Retrieves the first available driver.
+   * @returns {Promise<object>} - Promise resolving to the first available driver.
    * @throws {Error} - If no drivers are available.
    */
   getAvailableDriver = async () => {
@@ -55,8 +51,8 @@ class OrderService {
 
   /**
    * Fetches data for a list of items based on their IDs.
-   * @param {Array<number>} itemIds - An array of item IDs.
-   * @returns {Array<object>} - The data for the items.
+   * @param {Array<number>} itemIds - Array of item IDs.
+   * @returns {Promise<Array<object>>} - Promise resolving to items data.
    */
   getItemsData = async (itemIds) => {
     const result = await pool.query(queries.getItemsData, [itemIds]);
@@ -64,10 +60,10 @@ class OrderService {
   };
 
   /**
-   * Calculates the total preparation time and total price for a list of items.
-   * @param {Array<object>} items - The list of items in the order.
-   * @param {Array<object>} itemsData - The corresponding data for these items from the database.
-   * @returns {object} - An object containing the total preparation time and total price.
+   * Calculates total preparation time and total price for items.
+   * @param {Array<object>} items - List of items in the order.
+   * @param {Array<object>} itemsData - Data for these items from the database.
+   * @returns {object} - Totals including preparation time and price.
    */
   calculateOrderTotals = (items, itemsData) => {
     let totalPreparationTime = 0;
@@ -87,7 +83,7 @@ class OrderService {
 
   /**
    * Calculates the delivery cost based on the time required to drive.
-   * @param {number} timeToDriveMinutes - The time required to drive to the delivery location in minutes.
+   * @param {number} timeToDriveMinutes - The time in minutes.
    * @returns {number} - The delivery cost.
    */
   calculateDeliveryCost = (timeToDriveMinutes) => {
@@ -96,11 +92,11 @@ class OrderService {
 
   /**
    * Creates a new order in the database.
-   * @param {number} userId - The ID of the user placing the order.
-   * @param {number} driverId - The ID of the assigned driver.
+   * @param {number} userId - The user placing the order.
+   * @param {number} driverId - The assigned driver.
    * @param {number} totalPrice - The total price of the order.
    * @param {string} deliveryTime - The estimated delivery time.
-   * @returns {number} - The ID of the created order.
+   * @returns {Promise<number>} - Promise resolving to the ID of the created order.
    */
   async createOrder(userId, driverId, totalPrice, deliveryTime) {
     const result = await pool.query(queries.create, [
@@ -113,10 +109,11 @@ class OrderService {
   }
 
   /**
-   * Inserts the items of an order into the database.
-   * @param {number} orderId - The ID of the order.
-   * @param {Array<object>} items - The items in the order.
-   * @param {Array<object>} itemsData - The corresponding data for these items from the database.
+   * Inserts order items into the database.
+   * @param {number} orderId - The order ID.
+   * @param {Array<object>} items - Items in the order.
+   * @param {Array<object>} itemsData - Data for these items from the database.
+   * @returns {Promise<void>} - A promise that resolves when the items are inserted.
    */
   async insertOrderItems(orderId, items, itemsData) {
     const orderItemsPromises = items.map((item) =>
@@ -131,34 +128,29 @@ class OrderService {
   }
 
   /**
-   * Creates a new order, including fetching item data, calculating totals, getting delivery details, and inserting the order into the database.
-   * @param {number} userId - The ID of the user placing the order.
+   * Creates a new order, calculating totals, getting delivery details, and inserting it into the database.
+   * @param {number} userId - The user placing the order.
    * @param {Array<object>} items - The items in the order.
-   * @param {string} address - The delivery address.
-   * @returns {number} - The ID of the created order.
-   * @throws {Error} - If there is an issue with creating the order.
+   * @param {string} address - Delivery address.
+   * @returns {Promise<number>} - Promise resolving to the ID of the created order.
+   * @throws {Error} - If there is an issue creating the order.
    */
   create = async (userId, items, address) => {
     try {
-      // Step 1: Fetch item data
       const itemIds = items.map((item) => item.id);
       const itemsData = await this.getItemsData(itemIds);
 
-      // Step 2: Calculate totals
       const { totalPreparationTime, totalPrice: itemTotalPrice } =
         this.calculateOrderTotals(items, itemsData);
 
-      // Step 3: Get delivery details
       const { timeToDriveMinutes } = await getRoadInfo(address);
       const deliveryCost = this.calculateDeliveryCost(timeToDriveMinutes);
       const totalPrice = itemTotalPrice + deliveryCost;
       const totalTime = totalPreparationTime + timeToDriveMinutes;
       const deliveryTime = this.calculateDeliveryTime(totalTime);
 
-      // Step 4: Get available driver
       const driver = await this.getAvailableDriver();
 
-      // Step 5: Create order and order items in DB
       const orderId = await this.createOrder(
         userId,
         driver.id,
@@ -167,7 +159,6 @@ class OrderService {
       );
       await this.insertOrderItems(orderId, items, itemsData);
 
-      // Step 6: Set order as delivered and change driver status
       this.setDelivered(orderId, totalTime);
       this._driverService.changeStatus("delivering", driver.id);
 
@@ -178,11 +169,11 @@ class OrderService {
   };
 
   /**
-   * Fetches the details of an order by its ID and checks if it belongs to a specific user.
+   * Fetches the details of an order by its ID and checks ownership.
    * @param {number} orderId - The ID of the order.
-   * @param {number} userId - The ID of the user to check ownership.
-   * @returns {object} - The details of the order.
-   * @throws {Error} - If the order is not found or does not belong to the user.
+   * @param {number} userId - The ID of the user.
+   * @returns {Promise<object>} - Promise resolving to order details.
+   * @throws {Error} - If the order is not found or unauthorized.
    */
   getOrder = async (orderId, userId) => {
     try {
@@ -201,10 +192,10 @@ class OrderService {
   };
 
   /**
-   * Retrieves all orders associated with a specific user.
-   * @param {number} userId - The ID of the user.
-   * @returns {Array<object>} - A list of orders for the user.
-   * @throws {Error} - If there is an issue fetching the user's orders.
+   * Retrieves all orders for a specific user.
+   * @param {number} userId - The user ID.
+   * @returns {Promise<Array<object>>} - Promise resolving to the user's orders.
+   * @throws {Error} - If there is an issue fetching orders.
    */
   getUserOrders = async (userId) => {
     try {
@@ -216,10 +207,10 @@ class OrderService {
   };
 
   /**
-   * Fetches the items associated with a specific order.
+   * Fetches items associated with a specific order.
    * @param {number} orderId - The ID of the order.
-   * @returns {Array<object>} - The items in the order.
-   * @throws {Error} - If there is an issue fetching the order items.
+   * @returns {Promise<Array<object>>} - Promise resolving to the order items.
+   * @throws {Error} - If there is an issue fetching items.
    */
   getOrderItems = async (orderId) => {
     try {
