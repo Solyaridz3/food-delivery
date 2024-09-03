@@ -5,15 +5,18 @@ import validate from "./validation.js";
 import { validationMiddleware } from "../../middleware/validation.middleware.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 
+// Handles user-related routes
 class UserController {
   path = "/users";
   router = new Router();
   _userService = new UserService();
 
+  // Initializes routes
   constructor() {
     this.initializeRoutes();
   }
 
+  // Sets up routes for user registration, login, and update
   initializeRoutes() {
     this.router.post(
       `${this.path}/register`,
@@ -28,6 +31,7 @@ class UserController {
     this.router.patch(`${this.path}/`, authMiddleware, this.updateUser);
   }
 
+  // Handles user registration
   register = async (req, res, next) => {
     try {
       const userRole = "user";
@@ -42,11 +46,11 @@ class UserController {
 
       return res.status(201).json({ token });
     } catch (err) {
-      console.log(err);
       next(new HttpException(401, err.message));
     }
   };
 
+  // Handles user login
   login = async (req, res, next) => {
     try {
       const { email, password } = req.body;
@@ -57,6 +61,7 @@ class UserController {
     }
   };
 
+  // Handles updating user information
   updateUser = async (req, res, next) => {
     try {
       const userId = req.user;
@@ -67,7 +72,6 @@ class UserController {
       }
 
       const data = { id: userId, password, new_password, ...updateData };
-
       const updatedUser = await this._userService.update(data);
 
       return res.status(200).json({ user: updatedUser });

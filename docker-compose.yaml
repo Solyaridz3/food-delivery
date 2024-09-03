@@ -42,18 +42,19 @@ services:
       BUCKET_NAME: ${BUCKET_NAME}
       BUCKET_LOCATION: ${BUCKET_LOCATION}
       JWT_SECRET: ${JWT_SECRET}
+      RESTAURANT_ADDRESS: ${RESTAURANT_ADDRESS}
       TEST: false
-  
+
   lint:
     build:
       context: .
       dockerfile: Dockerfile.lint
 
-  test:
+  e2e-test:
     build:
       context: .
-      dockerfile: Dockerfile.test
-    image: food-del-api-test
+      dockerfile: Dockerfile.e2e
+    image: food-del-api-e2e-test
     ports:
       - 13001:3000
     depends_on:
@@ -71,4 +72,26 @@ services:
       BUCKET_NAME: ${BUCKET_NAME}
       BUCKET_LOCATION: ${BUCKET_LOCATION}
       JWT_SECRET: ${JWT_SECRET}
+      RESTAURANT_ADDRESS: ${RESTAURANT_ADDRESS}
+      TEST: true
+
+  unit-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.unit
+    image: food-del-api-unit-test
+    environment:
+      DB_TEST_HOST: ${DB_TEST_HOST}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      BUCKET_NAME: ${BUCKET_NAME}
+      BUCKET_LOCATION: ${BUCKET_LOCATION}
+      JWT_SECRET: ${JWT_SECRET}
+      RESTAURANT_ADDRESS: ${RESTAURANT_ADDRESS}
       TEST: true

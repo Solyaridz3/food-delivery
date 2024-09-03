@@ -3,7 +3,15 @@ import bcrypt from "bcryptjs";
 import token from "../../utils/token.js";
 import queries from "./queries.js";
 
+// Handles user-related operations
 class UserService {
+  // Registers a new user
+  // @param {string} name - User's name
+  // @param {string} email - User's email
+  // @param {string} phone - User's phone number
+  // @param {string} password - User's password
+  // @param {string} userRole - User's role (e.g., 'user', 'admin')
+  // @returns {string} - Access token for the registered user
   register = async (name, email, phone, password, userRole) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const queryResult = await pool.query(queries.register, [
@@ -17,6 +25,7 @@ class UserService {
     const user = queryResult.rows[0];
     const userId = user.id;
 
+    // If the first user registers, make them an admin
     if (userId === 1) {
       await pool.query(queries.registerAsAdmin, [userId]);
       userRole = "admin";
@@ -29,6 +38,10 @@ class UserService {
     return accessToken;
   };
 
+  // Logs in an existing user
+  // @param {string} email - User's email
+  // @param {string} password - User's password
+  // @returns {string} - Access token for the logged-in user
   login = async (email, password) => {
     const result = await pool.query(queries.getByEmail, [email]);
 
@@ -48,6 +61,9 @@ class UserService {
     return accessToken;
   };
 
+  // Updates an existing user's information
+  // @param {object} data - Object containing user update data
+  // @returns {object} - Updated user data (excluding password)
   update = async (data) => {
     try {
       const queryResult = await pool.query(queries.getById, [data.id]);
@@ -58,7 +74,7 @@ class UserService {
 
       const user = queryResult.rows[0];
 
-      // Check if the current password is correct
+      // Verify current password
       const isPasswordValid = await bcrypt.compare(
         data.password,
         user.password,
@@ -69,6 +85,7 @@ class UserService {
 
       const updatedFields = {};
 
+      // Update password if new password is provided
       if (data.new_password) {
         updatedFields.password = await bcrypt.hash(data.new_password, 10);
       }

@@ -1,5 +1,7 @@
 import Joi from "joi";
 
+// Orders related joi objects
+
 const makeOrder = Joi.object({
   address: Joi.string().required(),
   items: Joi.array().items(
