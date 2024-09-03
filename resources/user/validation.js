@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-// Joi user related validation objects
+// User related joi schemas
 
 const register = Joi.object({
   name: Joi.string().max(30).required(),

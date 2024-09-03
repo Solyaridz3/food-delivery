@@ -1,8 +1,10 @@
-import { response, Router } from "express";
+import { Router } from "express";
 import AdminService from "./service.js";
 import { isAdmin } from "../../middleware/auth.middleware.js";
 import HttpException from "../../utils/exceptions/HttpException.js";
 import multer from "multer";
+import { validationMiddleware } from "../../middleware/validation.middleware.js";
+import validate from "./validation.js";
 
 const storage = multer.memoryStorage(); // Configure multer to store files in memory
 
@@ -27,7 +29,11 @@ class AdminController {
     this.router.delete(`${this.path}/items/:itemId`, isAdmin, this.deleteItem); // Route to delete a specific item
     this.router.post(
       `${this.path}/items`,
-      [isAdmin, upload.single("image")],
+      [
+        isAdmin,
+        upload.single("image"),
+        validationMiddleware(validate.createItem),
+      ],
       this.createItem, // Route to create a new item with an image upload
     );
 
@@ -40,7 +46,7 @@ class AdminController {
     this.router.get(`${this.path}/orders`, isAdmin, this.getAllOrders); // Route to get all orders
     this.router.patch(
       `${this.path}/orders/:orderId/status`,
-      isAdmin,
+      [isAdmin, validationMiddleware(validate.updateOrderStatus)],
       this.updateOrderStatus, // Route to update the status of a specific order
     );
 
