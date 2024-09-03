@@ -1,3 +1,4 @@
+// Class to throw HttpExceptions instead of Errors
 class HttpException extends Error {
   constructor(status, message) {
     super(message);

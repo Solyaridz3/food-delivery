@@ -13,4 +13,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["./wait-for-it.sh", "test-db:5432", "--strict", "--timeout=30", "--", "npm", "run", "test"]
+CMD ["./wait-for-it.sh", "test-db:5432", "--strict", "--timeout=30", "--", "npm", "run", "test:unit"]

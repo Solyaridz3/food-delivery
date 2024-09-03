@@ -1,17 +1,16 @@
 import Joi from "joi";
 
+// Joi user related validation objects
+
 const register = Joi.object({
   name: Joi.string().max(30).required(),
-
   email: Joi.string().email().required(),
-
   password: Joi.string().min(6).required(),
   phone: Joi.string().min(6).max(20).required(),
 });
 
 const login = Joi.object({
   email: Joi.string().email().required(),
-
   password: Joi.string().required(),
 });
 

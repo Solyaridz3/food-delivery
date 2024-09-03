@@ -2,6 +2,7 @@ import pg from "pg";
 
 const { Pool } = pg;
 
+// Creation of Pool instance
 const pool = new Pool({
   host:
     process.env.TEST === "true"
