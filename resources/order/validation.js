@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-// Orders related joi objects
+// Orders related joi schemas
 
 const makeOrder = Joi.object({
   address: Joi.string().required(),
