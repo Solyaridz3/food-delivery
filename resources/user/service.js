@@ -92,11 +92,11 @@ class UserService {
       const newUser = { ...user, ...updatedFields };
 
       await pool.query(queries.updateUser, [
+        newUser.id,
         newUser.name,
         newUser.email,
         newUser.phone,
         newUser.password,
-        newUser.id,
       ]);
 
       const { password, ...newUserData } = newUser;

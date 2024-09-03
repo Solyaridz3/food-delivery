@@ -30,8 +30,17 @@ class AdminController {
       this.createItem,
     );
     // Orders
-
+    this.router.delete(
+      `${this.path}/orders/:orderId`,
+      isAdmin,
+      this.cancelOrder,
+    );
     this.router.get(`${this.path}/orders`, isAdmin, this.getAllOrders);
+    this.router.patch(
+      `${this.path}/orders/:orderId/status`,
+      isAdmin,
+      this.updateOrderStatus,
+    );
 
     // Drivers
     this.router.get(`${this.path}/drivers`, isAdmin, this.getAllDrivers);
@@ -44,6 +53,27 @@ class AdminController {
       res.status(200).json({ orders });
     } catch (err) {
       throw new HttpException(403, err.message);
+    }
+  };
+
+  updateOrderStatus = async (req, res, next) => {
+    try {
+      const { orderId } = req.params;
+      const { status } = req.body;
+      const order = await this._adminService.updateOrderStatus(status, orderId);
+      res.status(200).json({ order });
+    } catch (err) {
+      next(new HttpException(400, err.message));
+    }
+  };
+
+  cancelOrder = async (req, res, next) => {
+    try {
+      const { orderId } = req.params;
+      await this._adminService.deleteOrder(orderId);
+      res.sendStatus(204);
+    } catch (err) {
+      next(new HttpException(400, err.message));
     }
   };
 
@@ -93,7 +123,7 @@ class AdminController {
       await this._adminService.deleteItem(itemId);
       res.sendStatus(204);
     } catch (err) {
-      next(new HttpException(response.status | 404, err.message));
+      next(new HttpException(404, err.message));
     }
   };
 

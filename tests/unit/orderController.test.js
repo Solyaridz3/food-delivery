@@ -49,7 +49,7 @@ describe("OrderController.getOrder", () => {
       "mockUserId",
     );
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockOrder);
+    expect(res.json).toHaveBeenCalledWith({ order: { ...mockOrder } });
     expect(next).not.toHaveBeenCalled();
   });
 

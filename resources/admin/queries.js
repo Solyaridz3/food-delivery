@@ -1,6 +1,11 @@
 // Orders
 const getAllOrders = "SELECT * FROM orders";
 
+const updateOrderStatus =
+  "UPDATE orders SET delivery_status = $1 WHERE id = $2 RETURNING *";
+
+const deleteOrder = "DELETE from orders WHERE id = $1";
+
 // Users
 
 const deleteUserRelatedDriver = "DELETE FROM drivers where user_id = $1";
@@ -25,4 +30,6 @@ export default {
   getAllDrivers,
   deleteItem,
   deleteUserRelatedDriver,
+  updateOrderStatus,
+  deleteOrder,
 };
