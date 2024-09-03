@@ -17,6 +17,18 @@ class AdminService {
     return queryResult.rows;
   };
 
+  updateOrderStatus = async (newStatus, orderId) => {
+    const queryResult = await pool.query(queries.updateOrderStatus, [
+      newStatus,
+      orderId,
+    ]);
+    return queryResult.rows[0];
+  };
+
+  deleteOrder = async (orderId) => {
+    await pool.query(queries.deleteOrder, [orderId]);
+  };
+
   // Users
   getAllUsers = async () => {
     const queryResult = await pool.query(queries.getAllUsers);

@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-const secret = "secret";
+const secret = process.env.JWT_SECRET;
 
 function base64UrlEncode(str) {
   return Buffer.from(str)

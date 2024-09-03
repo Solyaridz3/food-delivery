@@ -7,7 +7,7 @@ import DriverService from "../driver/service.js";
 class OrderService {
   #driverService = new DriverService();
 
-  calculateDeliveryTime = async (totalTime) => {
+  calculateDeliveryTime = (totalTime) => {
     const date = new Date();
     date.setMinutes(date.getMinutes() + totalTime);
     let options = {
@@ -94,7 +94,7 @@ class OrderService {
       const deliveryCost = this.calculateDeliveryCost(timeToDriveMinutes);
       const totalPrice = itemTotalPrice + deliveryCost;
       const totalTime = totalPreparationTime + timeToDriveMinutes;
-      const deliveryTime = await this.calculateDeliveryTime(totalTime);
+      const deliveryTime = this.calculateDeliveryTime(totalTime);
       // Step 4: Get available driver
       const driver = await this.getAvailableDriver();
 
@@ -120,7 +120,7 @@ class OrderService {
   getOrder = async (orderId, userId) => {
     try {
       const queryResult = await pool.query(queries.getOrderById, [orderId]);
-      if (queryResult.rows.length === 0) {
+      if (queryResult.rows.length === 0 || order_user_id) {
         throw new Error("Order not found");
       }
       const order = queryResult.rows[0];

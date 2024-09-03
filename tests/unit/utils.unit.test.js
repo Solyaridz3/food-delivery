@@ -4,7 +4,7 @@ import { jest } from "@jest/globals";
 import crypto from "crypto";
 import auth from "../../utils/token.js";
 
-const secret = "secret";
+const secret = process.env.JWT_SECRET;
 
 beforeEach(() => {
   fetchMock.enableMocks();

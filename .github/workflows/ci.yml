@@ -1,55 +1,57 @@
 name: CI Pipeline
 
 on:
-    push:
-        branches:
-            - fixes
-    pull_request:
-        branches:
-            - fixes
+  push:
+    branches:
+      - fixes
+  pull_request:
+    branches:
+      - fixes
 
 jobs:
-    build-and-test:
-        runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 20
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
-            - name: Build Docker images
-              run: docker compose build
-              
-            - name: Run Linting
-              run: docker compose run --rm lint
+      - name: Build Docker images
+        run: docker compose build
 
-            - name: Run Tests
-              env:
-                  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
-                  BUCKET_LOCATION: ${{ secrets.BUCKET_LOCATION }}
-                  GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-                  S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-                  S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-                  DB_TEST_HOST: ${{ secrets.DB_TEST_HOST }}
-                  DB_HOST: ${{ secrets.DB_HOST }}
-                  DB_PORT: ${{ secrets.DB_PORT }}
-                  DB_USER: ${{ secrets.DB_USER }}
-                  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-                  DB_DATABASE: ${{ secrets.DB_DATABASE }}
-              run: |
-                  echo "DB_TEST_HOST=${DB_TEST_HOST}" > .env
-                  echo "DB_HOST=${DB_HOST}" >> .env
-                  echo "DB_PORT=${DB_PORT}" >> .env
-                  echo "DB_USER=${DB_USER}" >> .env
-                  echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
-                  echo "DB_DATABASE=${DB_DATABASE}" >> .env
-                  echo "GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}" >> .env
-                  echo "S3_ACCESS_KEY=${S3_ACCESS_KEY}" >> .env
-                  echo "S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}" >> .env
-                  echo "BUCKET_NAME=${BUCKET_NAME}" >> .env
-                  echo "BUCKET_LOCATION=${BUCKET_LOCATION}" >> .env
-                  docker compose up --abort-on-container-exit test test-db
+      - name: Run Linting
+        run: docker compose run --rm lint
+
+      - name: Run Tests
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          BUCKET_LOCATION: ${{ secrets.BUCKET_LOCATION }}
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          DB_TEST_HOST: ${{ secrets.DB_TEST_HOST }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: |
+          echo "DB_TEST_HOST=${DB_TEST_HOST}" > .env
+          echo "DB_HOST=${DB_HOST}" >> .env
+          echo "DB_PORT=${DB_PORT}" >> .env
+          echo "DB_USER=${DB_USER}" >> .env
+          echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
+          echo "DB_DATABASE=${DB_DATABASE}" >> .env
+          echo "GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}" >> .env
+          echo "S3_ACCESS_KEY=${S3_ACCESS_KEY}" >> .env
+          echo "S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}" >> .env
+          echo "BUCKET_NAME=${BUCKET_NAME}" >> .env
+          echo "BUCKET_LOCATION=${BUCKET_LOCATION}" >> .env
+          echo "JWT_SECRET=${JWT_SECRET}" >> .env
+          docker compose up --abort-on-container-exit test test-db

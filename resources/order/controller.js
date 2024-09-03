@@ -42,7 +42,7 @@ class OrderController {
       const userId = req.user;
       const orderId = req.params.orderId;
       const order = await this._orderService.getOrder(orderId, userId);
-      res.status(200).json(order);
+      res.status(200).json({ order });
     } catch (err) {
       next(new HttpException(404, err.message || "Order not found"));
     }
