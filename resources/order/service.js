@@ -1,11 +1,11 @@
 import pool from "../../db.js";
 import queries from "./queries.js";
-import getDistance from "../../utils/location.js";
+import getRoadInfo from "../../utils/location.js";
 import asyncTimeout from "../../utils/asyncTImeout.js";
 import DriverService from "../driver/service.js";
 
 class OrderService {
-  #driverService = new DriverService();
+  _driverService = new DriverService();
 
   calculateDeliveryTime = (totalTime) => {
     const date = new Date();
@@ -28,7 +28,7 @@ class OrderService {
   };
 
   getAvailableDriver = async () => {
-    const availableDrivers = await this.#driverService.getAvailableDrivers();
+    const availableDrivers = await this._driverService.getAvailableDrivers();
     if (availableDrivers.length === 0) {
       throw new Error("No available drivers at the moment");
     }
@@ -46,6 +46,9 @@ class OrderService {
 
     items.forEach((item) => {
       const itemData = itemsData.find((row) => row.id === item.id);
+      if (!itemData) {
+        return; // No item in database
+      }
       totalPrice += itemData.price * item.quantity;
       totalPreparationTime += itemData.preparation_time;
     });
@@ -90,7 +93,7 @@ class OrderService {
         this.calculateOrderTotals(items, itemsData);
 
       // Step 3: Get delivery details
-      const { timeToDriveMinutes } = await getDistance(address);
+      const { timeToDriveMinutes } = await getRoadInfo(address);
       const deliveryCost = this.calculateDeliveryCost(timeToDriveMinutes);
       const totalPrice = itemTotalPrice + deliveryCost;
       const totalTime = totalPreparationTime + timeToDriveMinutes;
@@ -109,7 +112,7 @@ class OrderService {
 
       // Step 6: Set order as delivered and change driver status
       this.setDelivered(orderId, totalTime);
-      this.#driverService.changeStatus("delivering", driver.id);
+      this._driverService.changeStatus("delivering", driver.id);
 
       return orderId;
     } catch (error) {
@@ -120,7 +123,7 @@ class OrderService {
   getOrder = async (orderId, userId) => {
     try {
       const queryResult = await pool.query(queries.getOrderById, [orderId]);
-      if (queryResult.rows.length === 0 || order_user_id) {
+      if (queryResult.rows.length === 0) {
         throw new Error("Order not found");
       }
       const order = queryResult.rows[0];
