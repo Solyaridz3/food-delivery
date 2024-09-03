@@ -58,7 +58,7 @@ jobs:
           echo "JWT_SECRET=${JWT_SECRET}" >> .env
           docker compose up --abort-on-container-exit e2e-test test-db
 
-        - name: Run Unit Tests
+      - name: Run Unit Tests
         env:
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
           BUCKET_LOCATION: ${{ secrets.BUCKET_LOCATION }}
