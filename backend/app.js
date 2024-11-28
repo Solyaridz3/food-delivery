@@ -1,6 +1,7 @@
 import express from "express";
 import { errorMiddleware as ErrorHandler } from "./middleware/error.middleware.js";
 import { testConnection } from "./db.js";
+import cors from "cors";
 
 // Main application class
 class App {
@@ -25,6 +26,7 @@ class App {
   // Sets up middleware for the app
   #initializeMiddleware() {
     this.express.use(express.json());
+    this.express.use(cors({ origin: "http://localhost:5173" }));
   }
 
   // Registers the controllers with the app

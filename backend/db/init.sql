@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS drivers (
 CREATE TABLE items (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    description VARCHAR(2083) NOT NULL,
     preparation_time INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     image_url VARCHAR(2083) NOT NULL

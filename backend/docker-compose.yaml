@@ -45,6 +45,31 @@ services:
       RESTAURANT_ADDRESS: ${RESTAURANT_ADDRESS}
       TEST: false
 
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: food-del-api-dev
+    depends_on:
+      - test-db
+    ports:
+      - 13000:3000
+    environment:
+      DB_TEST_HOST: ${DB_TEST_HOST}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      BUCKET_NAME: ${BUCKET_NAME}
+      BUCKET_LOCATION: ${BUCKET_LOCATION}
+      JWT_SECRET: ${JWT_SECRET}
+      RESTAURANT_ADDRESS: ${RESTAURANT_ADDRESS}
+      TEST: true
+
   lint:
     build:
       context: .
